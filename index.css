@@ -99,3 +99,12 @@ textarea {
   border-radius: 0.5rem;
   padding: 0.8rem;
 }
+.role-text[data-role="Tank"] {
+  color: #93c5fd;
+}
+.role-text[data-role="Healer"] {
+  color: #86efac;
+}
+.role-text[data-role="DPS"] {
+  color: #fca5a5;
+}

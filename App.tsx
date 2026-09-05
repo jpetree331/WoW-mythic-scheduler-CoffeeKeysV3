@@ -4,6 +4,7 @@ import AvailabilityForm from "./components/AvailabilityForm";
 import CoffeeKeysPanel from "./components/CoffeeKeysPanel";
 import SummaryDisplay from "./components/SummaryDisplay";
 import EventCreator from "./components/EventCreator";
+import { PlayerName, RoleLabels } from "./components/RoleText";
 import {
   adminToken,
   board,
@@ -387,7 +388,7 @@ export default function App() {
                     .map((p) => (
                       <li className="py-4 space-y-2" key={p.id}>
                         <h3 className="font-semibold break-words">
-                          {p.name}{" "}
+                          <PlayerName player={p} />{" "}
                           {p.isMine && (
                             <span className="text-xs text-emerald-300">
                               · Yours
@@ -395,7 +396,7 @@ export default function App() {
                           )}
                         </h3>
                         <p className="text-sm text-slate-300">
-                          {p.roles.join(" / ")}
+                          <RoleLabels roles={p.roles} />
                           {p.wowClass && ` · ${p.wowClass}`}
                         </p>
                         {p.discordName && (

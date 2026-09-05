@@ -7,6 +7,7 @@ import {
   isFullGroup,
 } from "../services/matchingService";
 import { seatPlayers } from "../shared/groups.js";
+import { PlayerName, RoleText } from "./RoleText";
 export default function SummaryDisplay({ players }: { players: Player[] }) {
   const [week, setWeek] = useState(
     DateTime.now().setZone("America/New_York").startOf("week").toISODate()!,
@@ -96,14 +97,23 @@ export default function SummaryDisplay({ players }: { players: Player[] }) {
                 <ul className="my-2 text-sm">
                   {group.map((s) => (
                     <li key={s.playerId}>
-                      {s.role}:{" "}
-                      {m.players.find((p) => p.id === s.playerId)?.name}
+                      <RoleText role={s.role}>{s.role}:</RoleText>{" "}
+                      <PlayerName
+                        player={m.players.find((p) => p.id === s.playerId)}
+                        role={s.role}
+                      />
                     </li>
                   ))}
                 </ul>
               )}
               <p className="text-sm text-slate-300 mt-2">
-                Available: {m.players.map((p) => p.name).join(", ")}
+                Available:{" "}
+                {m.players.map((p, i) => (
+                  <span key={p.id}>
+                    {i > 0 && ", "}
+                    <PlayerName player={p} />
+                  </span>
+                ))}
               </p>
             </article>
           );

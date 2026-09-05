@@ -10,6 +10,7 @@ import {
 import { planGroups, TIERS } from "../shared/groups.js";
 import { request } from "../services/api";
 import { calendarFile, discordRoster } from "../services/exports";
+import { PlayerName, RoleLabels, RoleText } from "./RoleText";
 const seats = [Role.TANK, Role.HEALER, Role.DPS, Role.DPS, Role.DPS];
 
 function GroupEditor({
@@ -111,11 +112,12 @@ function GroupEditor({
                   {g.seats.map((seat, si) => (
                     <div key={si}>
                       <label className="label" htmlFor={`seat-${g.id}-${si}`}>
-                        {seat.role}
+                        <RoleText role={seat.role}>{seat.role}</RoleText>
                         {seat.role === Role.DPS ? ` ${si - 1}` : ""}
                       </label>
                       <select
-                        className="field"
+                        className="field role-text"
+                        data-role={seat.role}
                         id={`seat-${g.id}-${si}`}
                         value={seat.playerId}
                         onChange={(e) =>
@@ -282,9 +284,16 @@ export default function CoffeeKeysPanel({
       <div className="mt-5 rounded-lg bg-slate-900/50 p-4">
         <h3 className="font-semibold mb-2">My signup</h3>
         {mineSignup ? (
-          <p className="text-emerald-300 mb-3">
-            {players.find((p) => p.id === mineSignup.playerId)?.name} · Keys{" "}
-            {mineSignup.tier} ·{" "}
+          <p className="text-slate-300 mb-3">
+            <PlayerName
+              player={players.find((p) => p.id === mineSignup.playerId)}
+              role={
+                event.groups
+                  .flatMap((g) => g.seats)
+                  .find((s) => s.playerId === mineSignup.playerId)?.role
+              }
+            />{" "}
+            · Keys {mineSignup.tier} ·{" "}
             {assigned.has(mineSignup.playerId)
               ? "Assigned below"
               : "Waiting for a group"}
@@ -392,9 +401,11 @@ export default function CoffeeKeysPanel({
               <ul className="space-y-2 mt-2">
                 {g.seats.map((s) => (
                   <li key={s.playerId}>
-                    <span className="text-slate-400">{s.role}:</span>{" "}
-                    {players.find((p) => p.id === s.playerId)?.name ||
-                      "Unavailable character"}
+                    <RoleText role={s.role}>{s.role}:</RoleText>{" "}
+                    <PlayerName
+                      player={players.find((p) => p.id === s.playerId)}
+                      role={s.role}
+                    />
                   </li>
                 ))}
               </ul>
@@ -423,8 +434,8 @@ export default function CoffeeKeysPanel({
                         className="bg-slate-700 rounded px-3 py-2 text-sm"
                         key={s.playerId}
                       >
-                        {p?.name || "Unavailable character"} ·{" "}
-                        {p?.roles.join(" / ")}
+                        <PlayerName player={p} /> ·{" "}
+                        <RoleLabels roles={p?.roles || []} />
                       </li>
                     );
                   })}
