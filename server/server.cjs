@@ -9,18 +9,28 @@ function createApp(options = {}) {
   const serverless = options.serverless ?? !!process.env.VERCEL;
   const db = options.db || createDatabase();
   const adminToken = options.adminToken ?? process.env.ADMIN_TOKEN ?? "";
-  const boardTokens =
-    options.boardTokens ?? JSON.parse(process.env.ADMIN_TOKENS || "{}");
+  let boardTokens;
+  try {
+    boardTokens =
+      options.boardTokens ?? JSON.parse(process.env.ADMIN_TOKENS || "{}");
+  } catch {
+    throw new v.HttpError(
+      503,
+      "ADMIN_TOKENS must be a valid JSON object of board names and private organizer tokens. Correct it in Vercel environment variables and redeploy.",
+    );
+  }
   v.check(
     v.object(boardTokens),
-    "ADMIN_TOKENS must be an object of board tokens.",
+    "ADMIN_TOKENS must be an object of board tokens. Correct it in the server environment and redeploy.",
+    503,
   );
   for (const token of [adminToken, ...Object.values(boardTokens)].filter(
     Boolean,
   ))
     v.check(
       typeof token === "string" && token.trim().length >= 24,
-      "Organizer tokens must contain at least 24 characters.",
+      "ADMIN_TOKEN and every ADMIN_TOKENS value must contain at least 24 characters. Set a longer private organizer token in the server environment and redeploy.",
+      503,
     );
   const origins = new Set(
     options.origins ??

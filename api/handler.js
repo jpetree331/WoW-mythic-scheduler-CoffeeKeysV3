@@ -1,4 +1,5 @@
 import server from "../server/server.cjs";
+import validation from "../server/validation.cjs";
 
 export function createHandler(options = {}) {
   let app;
@@ -25,7 +26,9 @@ export function createHandler(options = {}) {
         res.end(
           JSON.stringify({
             error:
-              "The service is not configured or is temporarily unavailable. Please retry.",
+              error instanceof validation.HttpError
+                ? error.message
+                : "The service is not configured or is temporarily unavailable. Please retry.",
           }),
         );
       } else res.end();

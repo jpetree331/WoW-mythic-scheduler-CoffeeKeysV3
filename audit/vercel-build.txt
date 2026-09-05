@@ -19,7 +19,7 @@ computing gzip size...
 dist/index.html                   0.43 kB │ gzip:  0.31 kB
 dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
 dist/assets/index-C9zQggNN.js   301.40 kB │ gzip: 94.42 kB
-✓ built in 815ms
+✓ built in 785ms
 Vercel runtime startup passes without require(ESM); API responds and reports missing database configuration safely.
 {
   "runtime": "nodejs",

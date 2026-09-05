@@ -10,301 +10,309 @@ TAP version 13
 # Subtest: visible pages refresh on polling, focus and reconnect without a persistent stream
 ok 1 - visible pages refresh on polling, focus and reconnect without a persistent stream
   ---
-  duration_ms: 179.9545
+  duration_ms: 165.6955
   type: 'test'
   ...
 # Subtest: calendar export is escaped, UTF-8 folded, dated and has a stable UID
 ok 2 - calendar export is escaped, UTF-8 folded, dated and has a stable UID
   ---
-  duration_ms: 27.6071
+  duration_ms: 27.3043
   type: 'test'
   ...
 # Subtest: weekly role matching never gives two alts of one member separate seats
 ok 3 - weekly role matching never gives two alts of one member separate seats
   ---
-  duration_ms: 2.7273
+  duration_ms: 2.8999
   type: 'test'
   ...
 # Subtest: V2 import preserves source bytes logically, both days and notes; old keys are invalidated
 ok 4 - V2 import preserves source bytes logically, both days and notes; old keys are invalidated
   ---
-  duration_ms: 28.4714
+  duration_ms: 27.7441
   type: 'test'
   ...
 # Subtest: schema initialization does not modify existing V2 tables
 ok 5 - schema initialization does not modify existing V2 tables
   ---
-  duration_ms: 2.7748
+  duration_ms: 2.7907
   type: 'test'
   ...
 # Subtest: PostgreSQL binding keeps quoted question marks and all user input separate
 ok 6 - PostgreSQL binding keeps quoted question marks and all user input separate
   ---
-  duration_ms: 1.4177
+  duration_ms: 1.3484
   type: 'test'
   ...
 # Subtest: PostgreSQL cold starts serialize schema creation across independent pools
 ok 7 - PostgreSQL cold starts serialize schema creation across independent pools # SKIP
   ---
-  duration_ms: 0.0725
+  duration_ms: 0.0941
   type: 'test'
   ...
 # Subtest: PostgreSQL independent instances reject stale signup, edit and publication races
 ok 8 - PostgreSQL independent instances reject stale signup, edit and publication races # SKIP
   ---
-  duration_ms: 0.0576
+  duration_ms: 0.066
   type: 'test'
   ...
 # Subtest: PostgreSQL statement failure rolls back groups, history and revision
 ok 9 - PostgreSQL statement failure rolls back groups, history and revision # SKIP
   ---
-  duration_ms: 0.046
+  duration_ms: 0.0474
   type: 'test'
   ...
 # Subtest: PostgreSQL consistent read snapshots survive concurrent commits
 ok 10 - PostgreSQL consistent read snapshots survive concurrent commits # SKIP
   ---
-  duration_ms: 0.106
+  duration_ms: 0.1097
   type: 'test'
   ...
 # Subtest: PostgreSQL rate limits are shared across pools and retain no raw IP
 ok 11 - PostgreSQL rate limits are shared across pools and retain no raw IP # SKIP
   ---
-  duration_ms: 0.0456
+  duration_ms: 0.0502
   type: 'test'
   ...
 # Subtest: prototype-named boards do not inherit organizer credentials
 ok 12 - prototype-named boards do not inherit organizer credentials
   ---
-  duration_ms: 39.6359
+  duration_ms: 38.9453
   type: 'test'
   ...
 # Subtest: event mutation requires a revision even when it is omitted by the caller
 ok 13 - event mutation requires a revision even when it is omitted by the caller
   ---
-  duration_ms: 16.8972
+  duration_ms: 16.6335
   type: 'test'
   ...
 # Subtest: ambiguous fall clock-change endpoints are skipped rather than overstated
 ok 14 - ambiguous fall clock-change endpoints are skipped rather than overstated
   ---
-  duration_ms: 3.1303
+  duration_ms: 3.0726
   type: 'test'
   ...
 # Subtest: F01: public snapshots expose neither owner keys nor ownership hashes
 ok 15 - F01: public snapshots expose neither owner keys nor ownership hashes
   ---
-  duration_ms: 4.7307
+  duration_ms: 4.7086
   type: 'test'
   ...
 # Subtest: F02: empty organizer configuration rejects old default passwords
 ok 16 - F02: empty organizer configuration rejects old default passwords
   ---
-  duration_ms: 9.8189
+  duration_ms: 9.8961
   type: 'test'
   ...
 # Subtest: F03: four people with flexible roles cannot fill five seats
 ok 17 - F03: four people with flexible roles cannot fill five seats
   ---
-  duration_ms: 0.3459
+  duration_ms: 0.3252
   type: 'test'
   ...
 # Subtest: F03: flexible healer plus dedicated tank forms a valid group
 ok 18 - F03: flexible healer plus dedicated tank forms a valid group
   ---
-  duration_ms: 0.8367
+  duration_ms: 0.8424
   type: 'test'
   ...
 # Subtest: F03: group planner maximizes complete groups without reuse
 ok 19 - F03: group planner maximizes complete groups without reuse
   ---
-  duration_ms: 0.242
+  duration_ms: 0.2113
   type: 'test'
   ...
 # Subtest: F04/F13: different dated events retain independent attendance and assignments
 ok 20 - F04/F13: different dated events retain independent attendance and assignments
   ---
-  duration_ms: 16.5615
+  duration_ms: 15.0129
   type: 'test'
   ...
 # Subtest: F05: notes-only edit preserves profile and event attendance
 ok 21 - F05: notes-only edit preserves profile and event attendance
   ---
-  duration_ms: 9.6362
+  duration_ms: 9.2702
   type: 'test'
   ...
 # Subtest: F05: removing a capability removes only its now-invalid assignment
 ok 22 - F05: removing a capability removes only its now-invalid assignment
   ---
-  duration_ms: 9.9215
+  duration_ms: 10.7597
   type: 'test'
   ...
 # Subtest: F06: ordinary members can see their event-only character and signup
 ok 23 - F06: ordinary members can see their event-only character and signup
   ---
-  duration_ms: 4.3484
+  duration_ms: 4.1359
   type: 'test'
   ...
 # Subtest: F07/F21: stale profile edits are rejected rather than overwriting changes
 ok 24 - F07/F21: stale profile edits are rejected rather than overwriting changes
   ---
-  duration_ms: 3.4504
+  duration_ms: 3.5192
   type: 'test'
   ...
 # Subtest: F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
 ok 25 - F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
   ---
-  duration_ms: 2.0422
+  duration_ms: 1.7379
   type: 'test'
   ...
 # Subtest: F09: repeated slots never count one player more than once
 ok 26 - F09: repeated slots never count one player more than once
   ---
-  duration_ms: 2.6383
+  duration_ms: 2.6614
   type: 'test'
   ...
 # Subtest: F10: both DST transition Sundays preserve noon wall-clock availability
 ok 27 - F10: both DST transition Sundays preserve noon wall-clock availability
   ---
-  duration_ms: 1.412
+  duration_ms: 1.4422
   type: 'test'
   ...
 # Subtest: F10: Pacific midnight conversion preserves both day segments
 ok 28 - F10: Pacific midnight conversion preserves both day segments
   ---
-  duration_ms: 1.124
+  duration_ms: 1.0937
   type: 'test'
   ...
 # Subtest: F10: non-half-hour timezone offsets yield exact intervals
 ok 29 - F10: non-half-hour timezone offsets yield exact intervals
   ---
-  duration_ms: 0.7982
+  duration_ms: 0.8077
   type: 'test'
   ...
 # Subtest: F11: failed group insert rolls back deletion and history together
 ok 30 - F11: failed group insert rolls back deletion and history together
   ---
-  duration_ms: 12.3666
+  duration_ms: 12.7095
   type: 'test'
   ...
 # Subtest: F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
 ok 31 - F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
   ---
-  duration_ms: 9.0001
+  duration_ms: 9.2344
   type: 'test'
   ...
 # Subtest: F12: deleting a character cascades signups and assignments
 ok 32 - F12: deleting a character cascades signups and assignments
   ---
-  duration_ms: 7.9867
+  duration_ms: 8.6346
   type: 'test'
   ...
 # Subtest: F13: archiving preserves all profiles and event signups
 ok 33 - F13: archiving preserves all profiles and event signups
   ---
-  duration_ms: 6.9849
+  duration_ms: 7.3209
   type: 'test'
   ...
 # Request failed: Error
 # Subtest: F14: database errors become HTTP 503 and the server remains alive
 ok 34 - F14: database errors become HTTP 503 and the server remains alive
   ---
-  duration_ms: 12.5628
+  duration_ms: 12.9685
   type: 'test'
   ...
 # Subtest: F14: initialization retries after a transient first failure
 ok 35 - F14: initialization retries after a transient first failure
   ---
-  duration_ms: 2.1044
+  duration_ms: 2.2877
   type: 'test'
   ...
 # Subtest: F16: simultaneous signups remain valid and cannot silently overfill groups
 ok 36 - F16: simultaneous signups remain valid and cannot silently overfill groups
   ---
-  duration_ms: 6.2329
+  duration_ms: 6.5177
   type: 'test'
   ...
 # Subtest: F16/F21: repeated creation requests are idempotent
 ok 37 - F16/F21: repeated creation requests are idempotent
   ---
-  duration_ms: 2.6977
+  duration_ms: 2.7139
   type: 'test'
   ...
 # Subtest: F17: sparse stable group IDs are preserved exactly
 ok 38 - F17: sparse stable group IDs are preserved exactly
   ---
-  duration_ms: 11.9783
+  duration_ms: 11.9593
   type: 'test'
   ...
 # Subtest: one member cannot sign up multiple alts for the same event
 ok 39 - one member cannot sign up multiple alts for the same event
   ---
-  duration_ms: 4.3037
+  duration_ms: 4.4656
   type: 'test'
   ...
 # Subtest: claims are board-scoped, single-use and attach a private owner key
 ok 40 - claims are board-scoped, single-use and attach a private owner key
   ---
-  duration_ms: 3.7091
+  duration_ms: 3.8295
   type: 'test'
   ...
 # Subtest: F08/F14: actual HTTP malformed bodies return 400, not process failures
 ok 41 - F08/F14: actual HTTP malformed bodies return 400, not process failures
   ---
-  duration_ms: 18.0858
+  duration_ms: 18.5249
   type: 'test'
   ...
 # Subtest: private key parsing never accepts V2 identifiers or anon
 ok 42 - private key parsing never accepts V2 identifiers or anon
   ---
-  duration_ms: 0.1702
+  duration_ms: 0.1716
+  type: 'test'
+  ...
+# API initialization failed: Error
+# API initialization failed: Error
+# Subtest: startup configuration errors identify the setting without exposing secrets
+ok 43 - startup configuration errors identify the setting without exposing secrets
+  ---
+  duration_ms: 6.6516
   type: 'test'
   ...
 # Subtest: Vercel API starts when Node disables synchronous require of ES modules
-ok 43 - Vercel API starts when Node disables synchronous require of ES modules
+ok 44 - Vercel API starts when Node disables synchronous require of ES modules
   ---
-  duration_ms: 90.9621
+  duration_ms: 86.1995
   type: 'test'
   ...
 # Subtest: Vercel parsed and raw JSON bodies preserve private ownership and validation
-ok 44 - Vercel parsed and raw JSON bodies preserve private ownership and validation
+ok 45 - Vercel parsed and raw JSON bodies preserve private ownership and validation
   ---
-  duration_ms: 58.8379
+  duration_ms: 56.8423
   type: 'test'
   ...
 # Subtest: Vercel rate limiting uses only the platform IP header
-ok 45 - Vercel rate limiting uses only the platform IP header
+ok 46 - Vercel rate limiting uses only the platform IP header
   ---
-  duration_ms: 0.6489
+  duration_ms: 0.6859
   type: 'test'
   ...
 # Subtest: Vercel deployment fails closed without PostgreSQL instead of writing local files
-ok 46 - Vercel deployment fails closed without PostgreSQL instead of writing local files
+ok 47 - Vercel deployment fails closed without PostgreSQL instead of writing local files
   ---
-  duration_ms: 0.4423
+  duration_ms: 0.559
   type: 'test'
   ...
 # Subtest: actual Vercel export preserves rewritten path, board and query parameters
-ok 47 - actual Vercel export preserves rewritten path, board and query parameters
+ok 48 - actual Vercel export preserves rewritten path, board and query parameters
   ---
-  duration_ms: 4.5044
+  duration_ms: 0.5348
   type: 'test'
   ...
 # Subtest: Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests
-ok 48 - Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests # SKIP
+ok 49 - Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests # SKIP
   ---
-  duration_ms: 0.0658
+  duration_ms: 0.0642
   type: 'test'
   ...
-1..48
-# tests 48
+1..49
+# tests 49
 # suites 0
-# pass 42
+# pass 43
 # fail 0
 # cancelled 0
 # skipped 6
 # todo 0
-# duration_ms 575.4272
+# duration_ms 564.3555
 
 > coffee-keys-v3@3.0.0 build
 > npm run typecheck && vite build
@@ -321,4 +329,4 @@ computing gzip size...
 dist/index.html                   0.43 kB │ gzip:  0.31 kB
 dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
 dist/assets/index-C9zQggNN.js   301.40 kB │ gzip: 94.42 kB
-✓ built in 777ms
+✓ built in 750ms

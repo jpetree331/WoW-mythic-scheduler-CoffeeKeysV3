@@ -8,6 +8,33 @@ const { testDatabase } = require("./database.cjs");
 const { execFileSync } = require("node:child_process");
 const path = require("node:path");
 
+test("startup configuration errors identify the setting without exposing secrets", async () => {
+  const { createHandler } = await import("../api/handler.js");
+  const token = "private-short-value";
+  const handler = createHandler({ adminToken: token });
+  const result = await invoke(handler, { url: "/api/stream", method: "GET" });
+  assert.equal(result.status, 503);
+  assert.match(JSON.parse(result.data).error, /ADMIN_TOKEN.*24 characters/);
+  assert.ok(!result.data.includes(token));
+  const original = process.env.ADMIN_TOKENS;
+  process.env.ADMIN_TOKENS = '{"secret-token-value"';
+  try {
+    const invalidJson = await invoke(createHandler({ adminToken: "" }), {
+      url: "/api/stream",
+      method: "GET",
+    });
+    assert.equal(invalidJson.status, 503);
+    assert.match(
+      JSON.parse(invalidJson.data).error,
+      /ADMIN_TOKENS must be a valid JSON/,
+    );
+    assert.ok(!invalidJson.data.includes("secret-token-value"));
+  } finally {
+    if (original === undefined) delete process.env.ADMIN_TOKENS;
+    else process.env.ADMIN_TOKENS = original;
+  }
+});
+
 test("Vercel API starts when Node disables synchronous require of ES modules", () => {
   execFileSync(
     process.execPath,
