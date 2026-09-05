@@ -6,7 +6,6 @@ import {
   formatTime,
   isFullGroup,
 } from "../services/matchingService";
-import { PlayerName } from "./RoleText";
 import OverlapSlots from "./OverlapSlots";
 export default function SummaryDisplay({ players }: { players: Player[] }) {
   const [week, setWeek] = useState(
@@ -29,8 +28,8 @@ export default function SummaryDisplay({ players }: { players: Player[] }) {
       <p className="muted mt-2">
         Explore shared availability for the selected week. Times below are
         Eastern; event cards show your local time. These suggestions do not
-        reserve players. Characters count separately; confirm the lineup if
-        someone lists alts. Slots with ambiguous or nonexistent clock-change
+        reserve players. Each person fills one slot; their alts are considered
+        when choosing a lineup. Slots with ambiguous or nonexistent clock-change
         endpoints are skipped; use a dated event for those times.
       </p>
       <div className="grid sm:grid-cols-3 gap-3 my-5">
@@ -83,18 +82,14 @@ export default function SummaryDisplay({ players }: { players: Player[] }) {
               {m.end === 1440 ? "Midnight" : formatTime(m.end)} ET
             </h3>
             <p className="muted mt-1">
-              {m.players.length} available characters
+              {new Set(m.players.map((p) => p.memberId || p.id)).size} available{" "}
+              {new Set(m.players.map((p) => p.memberId || p.id)).size === 1
+                ? "person"
+                : "people"}
+              {" · "}
+              {m.players.length} characters
             </p>
             <OverlapSlots players={m.players} />
-            <p className="text-sm text-slate-300 mt-2">
-              Available:{" "}
-              {m.players.map((p, i) => (
-                <span key={p.id}>
-                  {i > 0 && ", "}
-                  <PlayerName player={p} />
-                </span>
-              ))}
-            </p>
           </article>
         ))}
       </div>

@@ -114,11 +114,6 @@ export function formatTime(minutes: number) {
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
 }
 export const weeklySeats = (players: Player[]) =>
-  // An edit key grants access, but does not identify who plays a character.
-  // Organizers can manage several people's characters under the same key.
-  previewSeats(
-    players.map((p) => ({ ...p, memberId: p.id })),
-    [Role.TANK, Role.HEALER, Role.DPS, Role.DPS, Role.DPS],
-  );
+  previewSeats(players, [Role.TANK, Role.HEALER, Role.DPS, Role.DPS, Role.DPS]);
 export const isFullGroup = (match: Match) =>
   weeklySeats(match.players).every((seat) => seat.playerId !== null);

@@ -11,6 +11,13 @@ const labels = {
 export default function OverlapSlots({ players }: { players: Player[] }) {
   const seats = weeklySeats(players);
   const filled = seats.filter((s) => s.playerId !== null).length;
+  const selectedIds = new Set(seats.map((s) => s.playerId));
+  const selectedMembers = new Map(
+    players
+      .filter((p) => selectedIds.has(p.id))
+      .map((p) => [p.memberId || p.id, p]),
+  );
+  const unselected = players.filter((p) => !selectedIds.has(p.id));
   const needs = [Role.TANK, Role.HEALER, Role.DPS].flatMap((role) => {
     const count = seats.filter(
       (s) => s.role === role && s.playerId === null,
@@ -60,6 +67,29 @@ export default function OverlapSlots({ players }: { players: Player[] }) {
           );
         })}
       </ol>
+      {unselected.length > 0 && (
+        <ul
+          className="mt-3 space-y-2 text-sm text-slate-300"
+          aria-label="Other available characters"
+        >
+          {unselected.map((player) => {
+            const selected = selectedMembers.get(player.memberId || player.id);
+            return (
+              <li key={player.id} className="break-words">
+                <PlayerName player={player} />
+                {selected ? (
+                  <>
+                    {" "}
+                    — alternate to <PlayerName player={selected} />; same player
+                  </>
+                ) : (
+                  " — available; not in this lineup"
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
