@@ -157,7 +157,7 @@ if (require.main === module) {
       );
     } finally {
       source.close();
-      target.close();
+      await target.close();
     }
   })().catch((error) => {
     console.error(error.message);

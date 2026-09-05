@@ -6,6 +6,7 @@ const { createDatabase, hashKey } = require("./db.cjs");
 const v = require("./validation.cjs");
 
 function createApp(options = {}) {
+  const serverless = options.serverless ?? !!process.env.VERCEL;
   const db = options.db || createDatabase();
   const adminToken = options.adminToken ?? process.env.ADMIN_TOKEN ?? "";
   const boardTokens =
@@ -52,10 +53,26 @@ function createApp(options = {}) {
   async function body(req) {
     let data = "";
     let bytes = 0;
-    for await (const chunk of req) {
-      bytes += chunk.length;
-      v.check(bytes <= 128_000, "Request is too large.", 413);
-      data += chunk;
+    let parsed;
+    try {
+      parsed = req.body;
+    } catch {
+      throw new v.HttpError(400, "Send valid JSON.");
+    }
+    if (parsed !== undefined) {
+      data =
+        typeof parsed === "string" || Buffer.isBuffer(parsed)
+          ? String(parsed)
+          : JSON.stringify(parsed);
+      v.check(Buffer.byteLength(data) <= 128_000, "Request is too large.", 413);
+    } else {
+      const chunks = [];
+      for await (const chunk of req) {
+        bytes += Buffer.byteLength(chunk);
+        v.check(bytes <= 128_000, "Request is too large.", 413);
+        chunks.push(Buffer.from(chunk));
+      }
+      data = Buffer.concat(chunks).toString("utf8");
     }
     let result;
     try {
@@ -106,16 +123,30 @@ function createApp(options = {}) {
     const admin = () =>
       v.check(actor.admin, "Organizer sign-in required.", 401);
     if (req.method !== "GET" && req.method !== "HEAD") {
-      const ip = req.socket.remoteAddress || "unknown";
-      const now = Date.now();
-      let rate = rates.get(ip);
-      if (!rate || now - rate.start > 60_000) rate = { start: now, count: 0 };
-      v.check(
-        ++rate.count <= (options.rateLimit ?? 90),
-        "Too many changes. Please wait one minute.",
-        429,
-      );
-      rates.set(ip, rate);
+      // Vercel overwrites this header; never trust arbitrary forwarded headers
+      // in standalone mode. No raw IP is stored by the PostgreSQL limiter.
+      const ip = serverless
+        ? String(req.headers["x-vercel-forwarded-for"] || "unknown")
+            .split(",")[0]
+            .trim()
+        : req.socket.remoteAddress || "unknown";
+      if (serverless) {
+        v.check(
+          await db.consumeRateLimit(ip, options.rateLimit ?? 90),
+          "Too many changes. Please wait one minute.",
+          429,
+        );
+      } else {
+        const now = Date.now();
+        let rate = rates.get(ip);
+        if (!rate || now - rate.start > 60_000) rate = { start: now, count: 0 };
+        v.check(
+          ++rate.count <= (options.rateLimit ?? 90),
+          "Too many changes. Please wait one minute.",
+          429,
+        );
+        rates.set(ip, rate);
+      }
     }
     if (url.pathname === "/api/health" && req.method === "GET") {
       await db.health();
@@ -131,6 +162,10 @@ function createApp(options = {}) {
         adminConfigured: !!tokenFor(board),
       });
     if (url.pathname === "/api/stream" && req.method === "GET") {
+      if (serverless) {
+        res.writeHead(204, { "Cache-Control": "no-store" });
+        return res.end();
+      }
       const ip = req.socket.remoteAddress;
       v.check(
         clients.size < 1000 &&
@@ -202,7 +237,11 @@ function createApp(options = {}) {
         await db.setStatus(board, parts[2], b.status, b.revision);
       } else throw new v.HttpError(404, "Not found.");
     } else {
-      if (!url.pathname.startsWith("/api/") && req.method === "GET") {
+      if (
+        !serverless &&
+        !url.pathname.startsWith("/api/") &&
+        req.method === "GET"
+      ) {
         let requested;
         try {
           requested = path.resolve(
@@ -251,7 +290,7 @@ function createApp(options = {}) {
     broadcast(board);
     send(res, 200, result);
   }
-  const server = http.createServer((req, res) => {
+  const handler = (req, res) =>
     route(req, res).catch((error) => {
       if (res.headersSent) return res.end();
       if (!error.status)
@@ -262,29 +301,32 @@ function createApp(options = {}) {
           : "The service is temporarily unavailable. Your draft is safe; please retry.",
       });
     });
-  });
+  const server = http.createServer(handler);
   server.requestTimeout = 30_000;
   server.headersTimeout = 15_000;
-  const timer = setInterval(() => {
-    for (const c of clients)
-      if (!c.res.write(": heartbeat\n\n")) {
-        c.res.end();
-        clients.delete(c);
-      }
-    for (const [ip, rate] of rates)
-      if (Date.now() - rate.start > 60_000) rates.delete(ip);
-  }, 20_000);
-  timer.unref();
+  const timer = serverless
+    ? null
+    : setInterval(() => {
+        for (const c of clients)
+          if (!c.res.write(": heartbeat\n\n")) {
+            c.res.end();
+            clients.delete(c);
+          }
+        for (const [ip, rate] of rates)
+          if (Date.now() - rate.start > 60_000) rates.delete(ip);
+      }, 20_000);
+  timer?.unref();
   server.on("close", () => clearInterval(timer));
   return {
     server,
+    handler,
     db,
     close: async () => {
       clearInterval(timer);
       for (const c of clients) c.res.end();
       server.closeAllConnections();
       await new Promise((resolve) => server.close(resolve));
-      db.close();
+      await db.close();
     },
   };
 }

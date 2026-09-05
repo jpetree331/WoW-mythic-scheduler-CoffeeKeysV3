@@ -1,0 +1,318 @@
+
+> coffee-keys-v3@3.0.0 check
+> npm run test && npm run build
+
+
+> coffee-keys-v3@3.0.0 test
+> node --test tests/*.test.cjs
+
+TAP version 13
+# Subtest: visible pages refresh on polling, focus and reconnect without a persistent stream
+ok 1 - visible pages refresh on polling, focus and reconnect without a persistent stream
+  ---
+  duration_ms: 208.986
+  type: 'test'
+  ...
+# Subtest: calendar export is escaped, UTF-8 folded, dated and has a stable UID
+ok 2 - calendar export is escaped, UTF-8 folded, dated and has a stable UID
+  ---
+  duration_ms: 30.189
+  type: 'test'
+  ...
+# Subtest: weekly role matching never gives two alts of one member separate seats
+ok 3 - weekly role matching never gives two alts of one member separate seats
+  ---
+  duration_ms: 1.3065
+  type: 'test'
+  ...
+# Subtest: V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+ok 4 - V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+  ---
+  duration_ms: 29.5831
+  type: 'test'
+  ...
+# Subtest: schema initialization does not modify existing V2 tables
+ok 5 - schema initialization does not modify existing V2 tables
+  ---
+  duration_ms: 2.7738
+  type: 'test'
+  ...
+# Subtest: PostgreSQL binding keeps quoted question marks and all user input separate
+ok 6 - PostgreSQL binding keeps quoted question marks and all user input separate
+  ---
+  duration_ms: 1.8179
+  type: 'test'
+  ...
+# Subtest: PostgreSQL cold starts serialize schema creation across independent pools
+ok 7 - PostgreSQL cold starts serialize schema creation across independent pools # SKIP
+  ---
+  duration_ms: 0.1621
+  type: 'test'
+  ...
+# Subtest: PostgreSQL independent instances reject stale signup, edit and publication races
+ok 8 - PostgreSQL independent instances reject stale signup, edit and publication races # SKIP
+  ---
+  duration_ms: 0.0626
+  type: 'test'
+  ...
+# Subtest: PostgreSQL statement failure rolls back groups, history and revision
+ok 9 - PostgreSQL statement failure rolls back groups, history and revision # SKIP
+  ---
+  duration_ms: 0.0498
+  type: 'test'
+  ...
+# Subtest: PostgreSQL consistent read snapshots survive concurrent commits
+ok 10 - PostgreSQL consistent read snapshots survive concurrent commits # SKIP
+  ---
+  duration_ms: 0.1357
+  type: 'test'
+  ...
+# Subtest: PostgreSQL rate limits are shared across pools and retain no raw IP
+ok 11 - PostgreSQL rate limits are shared across pools and retain no raw IP # SKIP
+  ---
+  duration_ms: 0.0455
+  type: 'test'
+  ...
+# Subtest: prototype-named boards do not inherit organizer credentials
+ok 12 - prototype-named boards do not inherit organizer credentials
+  ---
+  duration_ms: 44.5555
+  type: 'test'
+  ...
+# Subtest: event mutation requires a revision even when it is omitted by the caller
+ok 13 - event mutation requires a revision even when it is omitted by the caller
+  ---
+  duration_ms: 19.024
+  type: 'test'
+  ...
+# Subtest: ambiguous fall clock-change endpoints are skipped rather than overstated
+ok 14 - ambiguous fall clock-change endpoints are skipped rather than overstated
+  ---
+  duration_ms: 3.5958
+  type: 'test'
+  ...
+# Subtest: F01: public snapshots expose neither owner keys nor ownership hashes
+ok 15 - F01: public snapshots expose neither owner keys nor ownership hashes
+  ---
+  duration_ms: 5.1007
+  type: 'test'
+  ...
+# Subtest: F02: empty organizer configuration rejects old default passwords
+ok 16 - F02: empty organizer configuration rejects old default passwords
+  ---
+  duration_ms: 10.6575
+  type: 'test'
+  ...
+# Subtest: F03: four people with flexible roles cannot fill five seats
+ok 17 - F03: four people with flexible roles cannot fill five seats
+  ---
+  duration_ms: 0.4095
+  type: 'test'
+  ...
+# Subtest: F03: flexible healer plus dedicated tank forms a valid group
+ok 18 - F03: flexible healer plus dedicated tank forms a valid group
+  ---
+  duration_ms: 0.9126
+  type: 'test'
+  ...
+# Subtest: F03: group planner maximizes complete groups without reuse
+ok 19 - F03: group planner maximizes complete groups without reuse
+  ---
+  duration_ms: 0.2259
+  type: 'test'
+  ...
+# Subtest: F04/F13: different dated events retain independent attendance and assignments
+ok 20 - F04/F13: different dated events retain independent attendance and assignments
+  ---
+  duration_ms: 15.9683
+  type: 'test'
+  ...
+# Subtest: F05: notes-only edit preserves profile and event attendance
+ok 21 - F05: notes-only edit preserves profile and event attendance
+  ---
+  duration_ms: 9.3745
+  type: 'test'
+  ...
+# Subtest: F05: removing a capability removes only its now-invalid assignment
+ok 22 - F05: removing a capability removes only its now-invalid assignment
+  ---
+  duration_ms: 11.783
+  type: 'test'
+  ...
+# Subtest: F06: ordinary members can see their event-only character and signup
+ok 23 - F06: ordinary members can see their event-only character and signup
+  ---
+  duration_ms: 4.3596
+  type: 'test'
+  ...
+# Subtest: F07/F21: stale profile edits are rejected rather than overwriting changes
+ok 24 - F07/F21: stale profile edits are rejected rather than overwriting changes
+  ---
+  duration_ms: 3.6145
+  type: 'test'
+  ...
+# Subtest: F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+ok 25 - F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+  ---
+  duration_ms: 2.1816
+  type: 'test'
+  ...
+# Subtest: F09: repeated slots never count one player more than once
+ok 26 - F09: repeated slots never count one player more than once
+  ---
+  duration_ms: 2.9393
+  type: 'test'
+  ...
+# Subtest: F10: both DST transition Sundays preserve noon wall-clock availability
+ok 27 - F10: both DST transition Sundays preserve noon wall-clock availability
+  ---
+  duration_ms: 1.7127
+  type: 'test'
+  ...
+# Subtest: F10: Pacific midnight conversion preserves both day segments
+ok 28 - F10: Pacific midnight conversion preserves both day segments
+  ---
+  duration_ms: 1.2495
+  type: 'test'
+  ...
+# Subtest: F10: non-half-hour timezone offsets yield exact intervals
+ok 29 - F10: non-half-hour timezone offsets yield exact intervals
+  ---
+  duration_ms: 0.9605
+  type: 'test'
+  ...
+# Subtest: F11: failed group insert rolls back deletion and history together
+ok 30 - F11: failed group insert rolls back deletion and history together
+  ---
+  duration_ms: 13.9367
+  type: 'test'
+  ...
+# Subtest: F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+ok 31 - F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+  ---
+  duration_ms: 10.0813
+  type: 'test'
+  ...
+# Subtest: F12: deleting a character cascades signups and assignments
+ok 32 - F12: deleting a character cascades signups and assignments
+  ---
+  duration_ms: 8.8419
+  type: 'test'
+  ...
+# Subtest: F13: archiving preserves all profiles and event signups
+ok 33 - F13: archiving preserves all profiles and event signups
+  ---
+  duration_ms: 7.9037
+  type: 'test'
+  ...
+# Request failed: Error
+# Subtest: F14: database errors become HTTP 503 and the server remains alive
+ok 34 - F14: database errors become HTTP 503 and the server remains alive
+  ---
+  duration_ms: 12.2934
+  type: 'test'
+  ...
+# Subtest: F14: initialization retries after a transient first failure
+ok 35 - F14: initialization retries after a transient first failure
+  ---
+  duration_ms: 2.1891
+  type: 'test'
+  ...
+# Subtest: F16: simultaneous signups remain valid and cannot silently overfill groups
+ok 36 - F16: simultaneous signups remain valid and cannot silently overfill groups
+  ---
+  duration_ms: 6.7436
+  type: 'test'
+  ...
+# Subtest: F16/F21: repeated creation requests are idempotent
+ok 37 - F16/F21: repeated creation requests are idempotent
+  ---
+  duration_ms: 2.8549
+  type: 'test'
+  ...
+# Subtest: F17: sparse stable group IDs are preserved exactly
+ok 38 - F17: sparse stable group IDs are preserved exactly
+  ---
+  duration_ms: 13.3957
+  type: 'test'
+  ...
+# Subtest: one member cannot sign up multiple alts for the same event
+ok 39 - one member cannot sign up multiple alts for the same event
+  ---
+  duration_ms: 4.8147
+  type: 'test'
+  ...
+# Subtest: claims are board-scoped, single-use and attach a private owner key
+ok 40 - claims are board-scoped, single-use and attach a private owner key
+  ---
+  duration_ms: 3.9971
+  type: 'test'
+  ...
+# Subtest: F08/F14: actual HTTP malformed bodies return 400, not process failures
+ok 41 - F08/F14: actual HTTP malformed bodies return 400, not process failures
+  ---
+  duration_ms: 20.9428
+  type: 'test'
+  ...
+# Subtest: private key parsing never accepts V2 identifiers or anon
+ok 42 - private key parsing never accepts V2 identifiers or anon
+  ---
+  duration_ms: 0.1708
+  type: 'test'
+  ...
+# Subtest: Vercel parsed and raw JSON bodies preserve private ownership and validation
+ok 43 - Vercel parsed and raw JSON bodies preserve private ownership and validation
+  ---
+  duration_ms: 60.9316
+  type: 'test'
+  ...
+# Subtest: Vercel rate limiting uses only the platform IP header
+ok 44 - Vercel rate limiting uses only the platform IP header
+  ---
+  duration_ms: 0.7093
+  type: 'test'
+  ...
+# Subtest: Vercel deployment fails closed without PostgreSQL instead of writing local files
+ok 45 - Vercel deployment fails closed without PostgreSQL instead of writing local files
+  ---
+  duration_ms: 0.4656
+  type: 'test'
+  ...
+# Subtest: actual Vercel export preserves rewritten path, board and query parameters
+ok 46 - actual Vercel export preserves rewritten path, board and query parameters
+  ---
+  duration_ms: 4.6996
+  type: 'test'
+  ...
+# Subtest: Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests
+ok 47 - Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests # SKIP
+  ---
+  duration_ms: 0.1094
+  type: 'test'
+  ...
+1..47
+# tests 47
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 6
+# todo 0
+# duration_ms 652.543
+
+> coffee-keys-v3@3.0.0 build
+> npm run typecheck && vite build
+
+
+> coffee-keys-v3@3.0.0 typecheck
+> tsc --noEmit
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 40 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.31 kB
+dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
+dist/assets/index-WSJnGYls.js   301.37 kB │ gzip: 94.39 kB
+✓ built in 828ms

@@ -1,5 +1,15 @@
 # V3 repair and release record
 
+## Vercel + Neon update
+
+V3 now includes a Vercel Node request handler, PostgreSQL adapter and schema, shared rate limiting, transaction locks across instances, and visible-tab polling. See `VERCEL.md` for deployment settings and limitations. No live database or hosting configuration has been changed.
+
+PostgreSQL integration tests cover concurrent cold starts, stale edit/signup/publication races across separate pools, actual SQL-error rollback, consistent snapshots, shared rate counters, V2 import and authenticated Vercel entrypoint requests. The official Vercel Node builder packages a clean source copy; `audit/vercel-package.json` records the routing and migration inclusion checks. Current test evidence is in `audit/vercel-postgres-tests.txt` and `audit/vercel-check.txt`.
+
+Validation: all 47 tests pass with isolated PostgreSQL 18; the SQLite run passes 41 and skips the six PostgreSQL-only cases. Strict TypeScript and the production build pass, and the full dependency audit reports zero vulnerabilities. The clean-copy Vercel build produces the same frontend assets as the local build. Browser verification confirmed both dated events, the new auto-refresh status, correct page styling and no horizontal overflow at the checked desktop viewport. Hosted Neon/Vercel checks remain the operator's final deployment step.
+
+## Original V3 release
+
 V2 baseline: `593cd4570a0b28f4f7fe7e1a53898e8bba4b1e8e`. V3 replaces the exposed-ID ownership scheme and recurring-day assignment model while retaining React, TypeScript, Node and libSQL. All 22 audit finding categories have been addressed in the active application; the original audit is retained as a baseline record.
 
 | Finding | Repair                                                                                                                                       |

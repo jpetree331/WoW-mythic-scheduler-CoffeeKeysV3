@@ -2,7 +2,7 @@
 
 The maintained setup, deployment, and migration instructions are in the root README.
 
-Node 22.18+, `@libsql/client`, and `.env` are used. Default local storage is `file:server/data/v3.db`. Production can use a remote libSQL database. Startup creates versioned V3 tables transactionally and preserves any V2 tables. There is no default admin password, schema-debug endpoint, or implicit legacy import.
+Use Node 22.18+ within Node 22. `DATABASE_URL` selects PostgreSQL (`pg`) or SQLite/libSQL (`@libsql/client`); local storage defaults to `file:server/data/v3.db`. Vercel requires a PostgreSQL URL and uses `api/handler.js`. See `../VERCEL.md` for Neon configuration. Startup creates versioned V3 tables transactionally and preserves any V2 tables. There is no default admin password, schema-debug endpoint, or implicit legacy import.
 
 All API routes use `/api` and `?board=<slug>`:
 
@@ -10,7 +10,7 @@ All API routes use `/api` and `?board=<slug>`:
 | ------ | -------------------- | ----------------------------------------------------------------------------------- |
 | GET    | `/health`            | Public database readiness                                                           |
 | GET    | `/snapshot`          | Public roster, with viewer-specific `canEdit` / `isMine`                            |
-| GET    | `/stream`            | Public board change events                                                          |
+| GET    | `/stream`            | Standalone SSE compatibility; Vercel returns 204; current frontend polls            |
 | GET    | `/admin`             | Verify organizer token                                                              |
 | PATCH  | `/board`             | Organizer; `{title}`                                                                |
 | POST   | `/players`           | Private owner key; profile plus `requestId`                                         |

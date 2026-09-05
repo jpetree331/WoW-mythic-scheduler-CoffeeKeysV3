@@ -1,0 +1,54 @@
+
+added 138 packages in 2s
+Skipping "install" command...
+Running "npm run build"
+
+> coffee-keys-v3@3.0.0 build
+> npm run typecheck && vite build
+
+
+> coffee-keys-v3@3.0.0 typecheck
+> tsc --noEmit
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 40 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.31 kB
+dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
+dist/assets/index-WSJnGYls.js   301.37 kB │ gzip: 94.39 kB
+✓ built in 906ms
+{
+  "runtime": "nodejs",
+  "handler": "api\\handler.js",
+  "fileCount": 179,
+  "postgresMigrationBundled": true,
+  "localDataExcluded": true,
+  "routes": [
+    {
+      "src": "^(?:/(.*))$",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "same-origin",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/api(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?$",
+      "headers": {
+        "Cache-Control": "no-store"
+      },
+      "continue": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/api(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?$",
+      "dest": "/api/handler?route=$1",
+      "check": true
+    }
+  ]
+}

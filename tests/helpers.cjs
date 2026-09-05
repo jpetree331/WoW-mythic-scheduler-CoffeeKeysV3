@@ -1,6 +1,7 @@
 const { randomUUID } = require("node:crypto");
 const { createDatabase, hashKey } = require("../server/db.cjs");
 const { createApp } = require("../server/server.cjs");
+const { testDatabase } = require("./database.cjs");
 const admin = { admin: true, hash: hashKey("a".repeat(64)) };
 const member = (n) => ({
   admin: false,
@@ -24,12 +25,12 @@ const eventInput = () => ({
   timezone: "America/New_York",
 });
 async function withDb(fn, options) {
-  const db = createDatabase({ url: ":memory:", ...options });
+  const db = await testDatabase(options);
   try {
     await db.ready();
     return await fn(db);
   } finally {
-    db.close();
+    await db.close();
   }
 }
 async function seed(
@@ -58,7 +59,7 @@ async function seed(
 }
 async function withServer(fn, options = {}) {
   const app = createApp({
-    db: createDatabase({ url: ":memory:" }),
+    db: options.db || (await testDatabase()),
     adminToken: "audit-only-organizer-secret-123456",
     rateLimit: 1000,
     ...options,

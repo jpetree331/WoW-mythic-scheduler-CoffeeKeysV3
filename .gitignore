@@ -16,6 +16,7 @@ dist-ssr
 !.env.example
 .npm-cache/
 .audit-cache/
+.vercel/
 server/data/
 *.db
 *.db-wal

@@ -1,6 +1,8 @@
 # Coffee & Keys V3
 
-A community Mythic+ scheduler: save a character, sign up for a dated event, and review five-person groups before publishing them. React + TypeScript, Node.js, and libSQL. No AI service, Discord bot, or external identity provider is required.
+A community Mythic+ scheduler: save a character, sign up for a dated event, and review five-person groups before publishing them. React + TypeScript, Node.js, and PostgreSQL or libSQL. No AI service, Discord bot, or external identity provider is required.
+
+**Vercel + Neon:** follow [VERCEL.md](VERCEL.md) to deploy the complete app from this repository. API routing, PostgreSQL support and serverless-safe refresh are included.
 
 ## What members can do
 
@@ -15,7 +17,7 @@ Organizers can create dated events, close/reopen signups, archive events without
 
 ## Run locally
 
-Use Node.js **22.18 or later** (Node 22 is tested). From the project directory:
+Use Node.js **22.18 or later within Node 22**. From the project directory:
 
 ```sh
 npm ci
@@ -48,12 +50,16 @@ Board links are public rosters, not private membership gates. Names, roles, note
 
 ## Deploy
 
+For Vercel + Neon, use [the Vercel deployment guide](VERCEL.md). Set `DATABASE_URL` to Neon's pooled PostgreSQL URL and set an organizer token. Vercel serves the frontend and the request-based API together.
+
+### Standalone Node hosting
+
 The simplest deployment is one Node service serving both the frontend and API:
 
 1. Build command: `npm ci && npm run build`.
 2. Start command: `npm start`.
 3. Set `HOST=0.0.0.0` and the platform-provided `PORT`.
-4. Set `DATABASE_URL` to a remote libSQL URL and `DATABASE_AUTH_TOKEN` to its credential, or mount durable storage and use a local `file:` URL.
+4. Set `DATABASE_URL` to a PostgreSQL URL (including TLS parameters), a remote libSQL URL with `DATABASE_AUTH_TOKEN`, or mount durable storage and use a local `file:` URL.
 5. Set a private `ADMIN_TOKEN` or `ADMIN_TOKENS`.
 6. Configure the health probe to `GET /api/health`; it checks the database and returns 503 during an outage.
 7. Use HTTPS and verify creating/editing/canceling an isolated test signup before inviting the community.
@@ -62,7 +68,7 @@ Do not run the Vite development server as the public production server. Tailwind
 
 For a separate static frontend, build with `VITE_API_BASE=https://your-backend.example/api`, and configure `ALLOWED_ORIGINS=https://your-frontend.example` on the backend. The backend's own static-serving CSP assumes the default same-origin arrangement; the separate frontend host must supply its own appropriate CSP. Backend configuration never belongs in `VITE_` variables.
 
-SSE provides immediate updates within a server instance, with heartbeat/reconnection handling. Focus/reconnect refresh and 30-second polling recover missed changes, including changes made on another instance. An instance-independent push service would be needed for sub-second updates across multiple instances. Writes are transactionally serialized on each client; database transactions and revision checks prevent stale cross-instance writes. The built-in write limit is 90 changes per source connection IP per minute; deployments behind a proxy may need gateway rate limiting appropriate to their traffic.
+The frontend refreshes immediately after its own writes and polls for other members' changes every 30 seconds while visible, also refreshing on focus/reconnect. PostgreSQL transaction locks and record revisions protect concurrent writes across server instances. Vercel uses shared database rate counters; standalone hosting uses a per-process 90-writes-per-minute connection-IP limit and may need proxy-aware gateway throttling. The optional standalone SSE endpoint remains compatible with older clients; the current frontend does not use it.
 
 ## Import existing V2 data safely
 
@@ -96,7 +102,7 @@ npm run build
 npm audit
 ```
 
-The suite uses the real local libSQL driver, disposable databases, and actual HTTP requests. It covers authorization, date/role matching, validation, rollback, concurrency, migration, idempotency, claims, reconnection cleanup, and calendar output. GitHub Actions runs tests, typecheck/build, and dependency auditing.
+The suite uses real libSQL and PostgreSQL drivers, disposable databases, and actual HTTP requests. It covers authorization, date/role matching, validation, rollback, concurrency, migration, idempotency, claims, polling cleanup, Vercel request handling, and calendar output. GitHub Actions runs SQLite and PostgreSQL jobs, typecheck/build, and dependency auditing. See `VERCEL.md` for PostgreSQL test configuration.
 
 For a disposable browser preview, build first and run `node audit/preview.cjs`, then open [the preview](http://127.0.0.1:4300/?board=audit). Its fixture organizer token is `audit-only-organizer-secret-123456`; it has no connection to production credentials or data. `?board=error` intentionally rejects character creation to test preserved drafts. Stop with Ctrl+C.
 

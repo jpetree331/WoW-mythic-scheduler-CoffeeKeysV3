@@ -64,29 +64,18 @@ export async function request<T = { ok: boolean }>(
   return payload;
 }
 export const fetchSnapshot = () => request<Snapshot>("/snapshot");
-export function subscribeToUpdates(
-  refresh: () => void,
-  status: (connected: boolean) => void,
-) {
-  const stream = new EventSource(
-    `${base}/stream?board=${encodeURIComponent(board)}`,
-  );
-  stream.addEventListener("changed", refresh);
-  stream.onopen = () => {
-    status(true);
-    refresh();
-  };
-  stream.onerror = () => status(false); // EventSource reconnects automatically.
+export function subscribeToUpdates(refresh: () => void) {
   const focus = () => {
     if (!document.hidden) refresh();
   };
   window.addEventListener("focus", focus);
+  window.addEventListener("online", focus);
   document.addEventListener("visibilitychange", focus);
   const poll = window.setInterval(focus, 30_000); // catches changes from other backend instances
   return () => {
-    stream.close();
     clearInterval(poll);
     window.removeEventListener("focus", focus);
+    window.removeEventListener("online", focus);
     document.removeEventListener("visibilitychange", focus);
   };
 }

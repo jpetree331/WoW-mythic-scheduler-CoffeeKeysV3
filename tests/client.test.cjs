@@ -1,51 +1,58 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadTS } = require("./helpers.cjs");
-test("F15: transient stream errors preserve automatic reconnection and cleanup closes", () => {
+test("visible pages refresh on polling, focus and reconnect without a persistent stream", () => {
   const before = {
     window: global.window,
     document: global.document,
     EventSource: global.EventSource,
   };
-  let stream;
-  let statuses = [];
+  const listeners = new Map();
+  let poll;
   let refreshes = 0;
   global.window = {
     location: { search: "?board=audit" },
-    addEventListener() {},
-    removeEventListener() {},
-    setInterval() {
+    addEventListener(name, callback) {
+      listeners.set(name, callback);
+    },
+    removeEventListener(name) {
+      listeners.delete(name);
+    },
+    setInterval(callback, delay) {
+      assert.equal(delay, 30000);
+      poll = callback;
       return 0;
     },
   };
   global.document = {
     hidden: false,
-    addEventListener() {},
-    removeEventListener() {},
+    addEventListener(name, callback) {
+      listeners.set(name, callback);
+    },
+    removeEventListener(name) {
+      listeners.delete(name);
+    },
   };
   global.EventSource = class {
     constructor() {
-      stream = this;
-      this.closed = false;
-    }
-    addEventListener() {}
-    close() {
-      this.closed = true;
+      assert.fail("Polling must not create an EventSource");
     }
   };
   try {
     const api = loadTS("services/api.ts");
-    const stop = api.subscribeToUpdates(
-      () => refreshes++,
-      (connected) => statuses.push(connected),
-    );
-    stream.onerror();
-    assert.equal(stream.closed, false);
-    stream.onopen();
-    assert.equal(refreshes, 1);
-    assert.deepEqual(statuses, [false, true]);
+    const stop = api.subscribeToUpdates(() => refreshes++);
+    poll();
+    listeners.get("focus")();
+    listeners.get("online")();
+    assert.equal(refreshes, 3);
+    global.document.hidden = true;
+    poll();
+    assert.equal(refreshes, 3);
+    global.document.hidden = false;
+    listeners.get("visibilitychange")();
+    assert.equal(refreshes, 4);
     stop();
-    assert.equal(stream.closed, true);
+    assert.equal(listeners.size, 0);
   } finally {
     Object.assign(global, before);
   }

@@ -1,0 +1,293 @@
+TAP version 13
+# Subtest: visible pages refresh on polling, focus and reconnect without a persistent stream
+ok 1 - visible pages refresh on polling, focus and reconnect without a persistent stream
+  ---
+  duration_ms: 203.6423
+  type: 'test'
+  ...
+# Subtest: calendar export is escaped, UTF-8 folded, dated and has a stable UID
+ok 2 - calendar export is escaped, UTF-8 folded, dated and has a stable UID
+  ---
+  duration_ms: 31.4701
+  type: 'test'
+  ...
+# Subtest: weekly role matching never gives two alts of one member separate seats
+ok 3 - weekly role matching never gives two alts of one member separate seats
+  ---
+  duration_ms: 1.1701
+  type: 'test'
+  ...
+# Subtest: V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+ok 4 - V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+  ---
+  duration_ms: 248.3656
+  type: 'test'
+  ...
+# Subtest: schema initialization does not modify existing V2 tables
+ok 5 - schema initialization does not modify existing V2 tables
+  ---
+  duration_ms: 4.1526
+  type: 'test'
+  ...
+# Subtest: PostgreSQL binding keeps quoted question marks and all user input separate
+ok 6 - PostgreSQL binding keeps quoted question marks and all user input separate
+  ---
+  duration_ms: 1.3513
+  type: 'test'
+  ...
+# Subtest: PostgreSQL cold starts serialize schema creation across independent pools
+ok 7 - PostgreSQL cold starts serialize schema creation across independent pools
+  ---
+  duration_ms: 130.2032
+  type: 'test'
+  ...
+# Subtest: PostgreSQL independent instances reject stale signup, edit and publication races
+ok 8 - PostgreSQL independent instances reject stale signup, edit and publication races
+  ---
+  duration_ms: 405.4056
+  type: 'test'
+  ...
+# Subtest: PostgreSQL statement failure rolls back groups, history and revision
+ok 9 - PostgreSQL statement failure rolls back groups, history and revision
+  ---
+  duration_ms: 215.961
+  type: 'test'
+  ...
+# Subtest: PostgreSQL consistent read snapshots survive concurrent commits
+ok 10 - PostgreSQL consistent read snapshots survive concurrent commits
+  ---
+  duration_ms: 187.5602
+  type: 'test'
+  ...
+# Subtest: PostgreSQL rate limits are shared across pools and retain no raw IP
+ok 11 - PostgreSQL rate limits are shared across pools and retain no raw IP
+  ---
+  duration_ms: 188.6123
+  type: 'test'
+  ...
+# Subtest: prototype-named boards do not inherit organizer credentials
+ok 12 - prototype-named boards do not inherit organizer credentials
+  ---
+  duration_ms: 140.8005
+  type: 'test'
+  ...
+# Subtest: event mutation requires a revision even when it is omitted by the caller
+ok 13 - event mutation requires a revision even when it is omitted by the caller
+  ---
+  duration_ms: 130.0022
+  type: 'test'
+  ...
+# Subtest: ambiguous fall clock-change endpoints are skipped rather than overstated
+ok 14 - ambiguous fall clock-change endpoints are skipped rather than overstated
+  ---
+  duration_ms: 3.6642
+  type: 'test'
+  ...
+# Subtest: F01: public snapshots expose neither owner keys nor ownership hashes
+ok 15 - F01: public snapshots expose neither owner keys nor ownership hashes
+  ---
+  duration_ms: 160.7571
+  type: 'test'
+  ...
+# Subtest: F02: empty organizer configuration rejects old default passwords
+ok 16 - F02: empty organizer configuration rejects old default passwords
+  ---
+  duration_ms: 33.8857
+  type: 'test'
+  ...
+# Subtest: F03: four people with flexible roles cannot fill five seats
+ok 17 - F03: four people with flexible roles cannot fill five seats
+  ---
+  duration_ms: 0.5554
+  type: 'test'
+  ...
+# Subtest: F03: flexible healer plus dedicated tank forms a valid group
+ok 18 - F03: flexible healer plus dedicated tank forms a valid group
+  ---
+  duration_ms: 1.2195
+  type: 'test'
+  ...
+# Subtest: F03: group planner maximizes complete groups without reuse
+ok 19 - F03: group planner maximizes complete groups without reuse
+  ---
+  duration_ms: 0.3214
+  type: 'test'
+  ...
+# Subtest: F04/F13: different dated events retain independent attendance and assignments
+ok 20 - F04/F13: different dated events retain independent attendance and assignments
+  ---
+  duration_ms: 246.1298
+  type: 'test'
+  ...
+# Subtest: F05: notes-only edit preserves profile and event attendance
+ok 21 - F05: notes-only edit preserves profile and event attendance
+  ---
+  duration_ms: 155.4298
+  type: 'test'
+  ...
+# Subtest: F05: removing a capability removes only its now-invalid assignment
+ok 22 - F05: removing a capability removes only its now-invalid assignment
+  ---
+  duration_ms: 147.7628
+  type: 'test'
+  ...
+# Subtest: F06: ordinary members can see their event-only character and signup
+ok 23 - F06: ordinary members can see their event-only character and signup
+  ---
+  duration_ms: 110.6827
+  type: 'test'
+  ...
+# Subtest: F07/F21: stale profile edits are rejected rather than overwriting changes
+ok 24 - F07/F21: stale profile edits are rejected rather than overwriting changes
+  ---
+  duration_ms: 213.2712
+  type: 'test'
+  ...
+# Subtest: F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+ok 25 - F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+  ---
+  duration_ms: 2.2691
+  type: 'test'
+  ...
+# Subtest: F09: repeated slots never count one player more than once
+ok 26 - F09: repeated slots never count one player more than once
+  ---
+  duration_ms: 2.8267
+  type: 'test'
+  ...
+# Subtest: F10: both DST transition Sundays preserve noon wall-clock availability
+ok 27 - F10: both DST transition Sundays preserve noon wall-clock availability
+  ---
+  duration_ms: 1.5319
+  type: 'test'
+  ...
+# Subtest: F10: Pacific midnight conversion preserves both day segments
+ok 28 - F10: Pacific midnight conversion preserves both day segments
+  ---
+  duration_ms: 1.1817
+  type: 'test'
+  ...
+# Subtest: F10: non-half-hour timezone offsets yield exact intervals
+ok 29 - F10: non-half-hour timezone offsets yield exact intervals
+  ---
+  duration_ms: 0.8657
+  type: 'test'
+  ...
+# Subtest: F11: failed group insert rolls back deletion and history together
+ok 30 - F11: failed group insert rolls back deletion and history together
+  ---
+  duration_ms: 15.5773
+  type: 'test'
+  ...
+# Subtest: F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+ok 31 - F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+  ---
+  duration_ms: 141.5501
+  type: 'test'
+  ...
+# Subtest: F12: deleting a character cascades signups and assignments
+ok 32 - F12: deleting a character cascades signups and assignments
+  ---
+  duration_ms: 134.9325
+  type: 'test'
+  ...
+# Subtest: F13: archiving preserves all profiles and event signups
+ok 33 - F13: archiving preserves all profiles and event signups
+  ---
+  duration_ms: 125.2347
+  type: 'test'
+  ...
+# Request failed: Error
+# Subtest: F14: database errors become HTTP 503 and the server remains alive
+ok 34 - F14: database errors become HTTP 503 and the server remains alive
+  ---
+  duration_ms: 6.2476
+  type: 'test'
+  ...
+# Subtest: F14: initialization retries after a transient first failure
+ok 35 - F14: initialization retries after a transient first failure
+  ---
+  duration_ms: 2.342
+  type: 'test'
+  ...
+# Subtest: F16: simultaneous signups remain valid and cannot silently overfill groups
+ok 36 - F16: simultaneous signups remain valid and cannot silently overfill groups
+  ---
+  duration_ms: 259.0697
+  type: 'test'
+  ...
+# Subtest: F16/F21: repeated creation requests are idempotent
+ok 37 - F16/F21: repeated creation requests are idempotent
+  ---
+  duration_ms: 123.4172
+  type: 'test'
+  ...
+# Subtest: F17: sparse stable group IDs are preserved exactly
+ok 38 - F17: sparse stable group IDs are preserved exactly
+  ---
+  duration_ms: 143.6108
+  type: 'test'
+  ...
+# Subtest: one member cannot sign up multiple alts for the same event
+ok 39 - one member cannot sign up multiple alts for the same event
+  ---
+  duration_ms: 321.0328
+  type: 'test'
+  ...
+# Subtest: claims are board-scoped, single-use and attach a private owner key
+ok 40 - claims are board-scoped, single-use and attach a private owner key
+  ---
+  duration_ms: 227.578
+  type: 'test'
+  ...
+# Subtest: F08/F14: actual HTTP malformed bodies return 400, not process failures
+ok 41 - F08/F14: actual HTTP malformed bodies return 400, not process failures
+  ---
+  duration_ms: 220.2417
+  type: 'test'
+  ...
+# Subtest: private key parsing never accepts V2 identifiers or anon
+ok 42 - private key parsing never accepts V2 identifiers or anon
+  ---
+  duration_ms: 0.2666
+  type: 'test'
+  ...
+# Subtest: Vercel parsed and raw JSON bodies preserve private ownership and validation
+ok 43 - Vercel parsed and raw JSON bodies preserve private ownership and validation
+  ---
+  duration_ms: 70.0757
+  type: 'test'
+  ...
+# Subtest: Vercel rate limiting uses only the platform IP header
+ok 44 - Vercel rate limiting uses only the platform IP header
+  ---
+  duration_ms: 0.9321
+  type: 'test'
+  ...
+# Subtest: Vercel deployment fails closed without PostgreSQL instead of writing local files
+ok 45 - Vercel deployment fails closed without PostgreSQL instead of writing local files
+  ---
+  duration_ms: 0.6585
+  type: 'test'
+  ...
+# Subtest: actual Vercel export preserves rewritten path, board and query parameters
+ok 46 - actual Vercel export preserves rewritten path, board and query parameters
+  ---
+  duration_ms: 5.4065
+  type: 'test'
+  ...
+# Subtest: Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests
+ok 47 - Vercel entrypoint with a PostgreSQL URL completes authenticated event and signup requests
+  ---
+  duration_ms: 223.1134
+  type: 'test'
+  ...
+1..47
+# tests 47
+# suites 0
+# pass 47
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3454.3384

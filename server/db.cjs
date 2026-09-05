@@ -14,18 +14,26 @@ function createDatabase(options = {}) {
   async function ready() {
     if (!initialized)
       initialized = (async () => {
-        const { createClient } = require("@libsql/client");
         let url =
           options.url ?? process.env.DATABASE_URL ?? "file:server/data/v3.db";
-        if (url === "file:server/data/v3.db")
-          fs.mkdirSync(path.join(__dirname, "data"), { recursive: true });
-        client =
-          options.client ||
-          createClient({
+        v.check(
+          !process.env.VERCEL || /^postgres(?:ql)?:\/\//.test(url),
+          "Vercel requires a Neon/PostgreSQL DATABASE_URL.",
+          503,
+        );
+        if (options.client) client = options.client;
+        else if (/^postgres(?:ql)?:\/\//.test(url))
+          client = require("./postgres.cjs").createPostgresClient({ url });
+        else {
+          if (url === "file:server/data/v3.db")
+            fs.mkdirSync(path.join(__dirname, "data"), { recursive: true });
+          client = require("@libsql/client").createClient({
             url,
             authToken: options.authToken ?? process.env.DATABASE_AUTH_TOKEN,
           });
-        await client.execute("PRAGMA foreign_keys = ON");
+        }
+        const postgres = client.dialect === "postgres";
+        if (!postgres) await client.execute("PRAGMA foreign_keys = ON");
         const tx = await client.transaction("write");
         try {
           await tx.execute(
@@ -34,7 +42,12 @@ function createDatabase(options = {}) {
           const current = await tx.execute("SELECT version FROM v3_schema");
           if (!current.rows.length) {
             const sql = fs.readFileSync(
-              path.join(__dirname, "migrations/007_v3_schema.sql"),
+              path.join(
+                __dirname,
+                postgres
+                  ? "migrations/postgres/001_v3.sql"
+                  : "migrations/007_v3_schema.sql",
+              ),
               "utf8",
             );
             for (const statement of sql
@@ -57,18 +70,18 @@ function createDatabase(options = {}) {
           tx.close();
         }
         return client;
-      })().catch((error) => {
+      })().catch(async (error) => {
+        await client?.close();
         initialized = undefined;
-        client?.close();
         throw error;
       });
     return initialized;
   }
-  // A single client must not start overlapping local transactions. Remote write
-  // transactions plus record revisions also protect multiple server processes.
-  function transaction(fn, mode = "write") {
-    const result = queue.then(async () => {
-      const c = await ready();
+  // Local libSQL must serialize transactions on its one client. PostgreSQL uses
+  // pooled connections and a database-wide write lock; reads can run together.
+  async function transaction(fn, mode = "write") {
+    const c = await ready();
+    const run = async () => {
       const tx = await c.transaction(mode);
       try {
         const value = await fn(tx);
@@ -80,7 +93,9 @@ function createDatabase(options = {}) {
       } finally {
         tx.close();
       }
-    });
+    };
+    if (c.dialect === "postgres") return run();
+    const result = queue.then(run);
     queue = result.catch(() => {});
     return result;
   }
@@ -220,6 +235,15 @@ function createDatabase(options = {}) {
     ready,
     transaction,
     close: () => client?.close(),
+    consumeRateLimit: async (ip, limit) => {
+      const c = await ready();
+      v.check(
+        c.consumeRateLimit,
+        "Shared rate limiting requires PostgreSQL.",
+        503,
+      );
+      return c.consumeRateLimit(ip, limit);
+    },
     health: () => transaction((tx) => tx.execute("SELECT 1"), "read"),
     snapshot: (board, actor) =>
       transaction(async (tx) => {

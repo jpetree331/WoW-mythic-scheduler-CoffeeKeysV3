@@ -74,9 +74,11 @@ export default function App() {
           const next = await fetchSnapshot();
           if (mounted.current) {
             setSnapshot(next);
+            setConnected(true);
             setError("");
           }
         } catch (e) {
+          if (mounted.current) setConnected(false);
           if (mounted.current)
             setError(e instanceof Error ? e.message : "Unable to refresh.");
         }
@@ -91,7 +93,7 @@ export default function App() {
     void refresh();
     const stop = subscribeToUpdates(() => {
       void refresh();
-    }, setConnected);
+    });
     return () => {
       mounted.current = false;
       stop();
@@ -128,7 +130,7 @@ export default function App() {
           <p className="muted mt-2">
             Board: {board} ·{" "}
             {connected
-              ? "Live updates connected"
+              ? "Auto-refresh every 30 seconds"
               : "Reconnecting · checking every 30 seconds"}
           </p>
         </div>
