@@ -1,5 +1,5 @@
 {
-  "name": "Mythic+ Friend Finder",
-  "description": "A lightweight social coordination tool designed for World of Warcraft guildmates or Mythic+ players to easily share and match their availability for running keys. The app collects player role preference and weekly availability in a standardized format, and dynamically highlights overlapping free times between users to assist in group formation.",
+  "name": "Coffee & Keys V3",
+  "description": "Community Mythic+ scheduling with dated events, private signup ownership, weekly availability, flexible-role group proposals, organizer publication, waitlists and calendar/Discord exports.",
   "requestFramePermissions": []
 }

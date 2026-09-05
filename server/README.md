@@ -1,34 +1,28 @@
-Backend server (no dependencies)
+# Backend
 
-Install deps:
+The maintained setup, deployment, and migration instructions are in the root README.
 
-- npm install better-sqlite3
+Node 22.18+, `@libsql/client`, and `.env` are used. Default local storage is `file:server/data/v3.db`. Production can use a remote libSQL database. Startup creates versioned V3 tables transactionally and preserves any V2 tables. There is no default admin password, schema-debug endpoint, or implicit legacy import.
 
-Run:
+All API routes use `/api` and `?board=<slug>`:
 
-- node server/server.cjs
+| Method | Route                | Access                                                                              |
+| ------ | -------------------- | ----------------------------------------------------------------------------------- |
+| GET    | `/health`            | Public database readiness                                                           |
+| GET    | `/snapshot`          | Public roster, with viewer-specific `canEdit` / `isMine`                            |
+| GET    | `/stream`            | Public board change events                                                          |
+| GET    | `/admin`             | Verify organizer token                                                              |
+| PATCH  | `/board`             | Organizer; `{title}`                                                                |
+| POST   | `/players`           | Private owner key; profile plus `requestId`                                         |
+| PATCH  | `/players/:id`       | Owner or organizer; partial profile plus `version`                                  |
+| DELETE | `/players/:id`       | Owner or organizer; `{version}`                                                     |
+| POST   | `/players/:id/claim` | Organizer; generate single-use recovery code                                        |
+| POST   | `/claim`             | Private owner key; `{code}`                                                         |
+| POST   | `/events`            | Organizer; `{title,startsAt,timezone,duration}`                                     |
+| PUT    | `/events/:id/signup` | Owner or organizer; `{playerId,tier,revision}` or `{playerId,cancel:true,revision}` |
+| PUT    | `/events/:id/groups` | Organizer; `{groups,revision}`                                                      |
+| PUT    | `/events/:id/status` | Organizer; `{status,revision}`                                                      |
 
-Environment variables:
+Owner header: `X-Owner-Key`. Organizer header: `Authorization: Bearer <token>`. Group records contain `{id,tier,seats:[{playerId,role}]}`; complete groups require five distinct people and the standard 1/1/3 composition. Empty group lists explicitly clear published assignments without deleting signups. A partial group caused by cancellation remains visible as needing a replacement; fill it before republishing.
 
-- ADMIN_TOKEN (optional): set to override the default admin token. If not set, the default is `culurienixoye`.
-
-Storage:
-
-- SQLite DB at `server/data/app.db`. On Railway, mount a persistent volume to `/app/server/data`.
-
-Live updates:
-
-- Server‑Sent Events at `GET /events?board=...` streams `players` events on changes.
-
-Endpoints:
-
-- GET /health → { ok: true }
-- GET /players → list all players
-- POST /players → create a player
-  - Body: { name, role, availability, notes? }
-- DELETE /players/:id → delete a player
-- DELETE /players → delete all players (dangerous)
-
-CORS: Allows all origins for local development.
-
-Data is stored in server/data/players.json.
+400 means validation failure, 401/403 access failure, 404 missing record, 409 stale revision/closed event/conflict, 429 rate limiting, and 503 backend unavailability. Missing revisions cannot bypass conflict detection. Raw database errors and ownership hashes are never sent to callers.

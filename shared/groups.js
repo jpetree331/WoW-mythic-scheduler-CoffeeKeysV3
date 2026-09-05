@@ -1,0 +1,51 @@
+const ROLES = ["Tank", "Healer", "DPS"];
+const TIERS = ["2-5", "6-9", "10+"];
+// Augmenting paths move flexible players when another seat needs them.
+function seatPlayers(input, roles) {
+  const people = [...new Map(input.map((p) => [p.id, p])).values()].sort(
+    (a, b) => a.roles.length - b.roles.length || a.id.localeCompare(b.id),
+  );
+  const seats = Array(roles.length).fill(null);
+  const personSeat = new Map();
+  function fill(seat, visited) {
+    for (const p of people) {
+      const identity = p.memberId || p.id;
+      if (!p.roles.includes(roles[seat]) || visited.has(identity)) continue;
+      visited.add(identity);
+      const previous = personSeat.get(identity);
+      if (previous === undefined || fill(previous, visited)) {
+        personSeat.set(identity, seat);
+        seats[seat] = p;
+        return true;
+      }
+    }
+    return false;
+  }
+  for (let i = 0; i < roles.length; i++) if (!fill(i, new Set())) return null;
+  return seats.map((p, i) => ({ playerId: p.id, role: roles[i] }));
+}
+function planGroups(people, tier) {
+  const eligible = [
+    ...new Map(
+      people.filter((p) => p.tier === tier).map((p) => [p.id, p]),
+    ).values(),
+  ];
+  for (let count = Math.floor(eligible.length / 5); count > 0; count--) {
+    const roles = Array.from({ length: count }, () => [
+      "Tank",
+      "Healer",
+      "DPS",
+      "DPS",
+      "DPS",
+    ]).flat();
+    const seats = seatPlayers(eligible, roles);
+    if (seats)
+      return Array.from({ length: count }, (_, i) => ({
+        id: `${tier}-${i + 1}`,
+        tier,
+        seats: seats.slice(i * 5, i * 5 + 5),
+      }));
+  }
+  return [];
+}
+export { ROLES, TIERS, seatPlayers, planGroups };

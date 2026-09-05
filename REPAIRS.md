@@ -1,0 +1,49 @@
+# V3 repair and release record
+
+V2 baseline: `593cd4570a0b28f4f7fe7e1a53898e8bba4b1e8e`. V3 replaces the exposed-ID ownership scheme and recurring-day assignment model while retaining React, TypeScript, Node and libSQL. All 22 audit finding categories have been addressed in the active application; the original audit is retained as a baseline record.
+
+| Finding | Repair                                                                                                                                       |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| F01     | Private random edit keys, server-side hashes, viewer permissions; old IDs grant no access.                                                   |
+| F02     | No default organizer token; optional board-specific tokens and short-token startup validation.                                               |
+| F03     | Shared augmenting-path role matching; distinct members and explicit role seats.                                                              |
+| F04     | Independent dated events, signups and assignments; both weekend days are preserved.                                                          |
+| F05     | Validated partial profile merge; events are separate; capability changes invalidate affected seats.                                          |
+| F06     | Public event rosters and My signup with owner edit/cancel controls.                                                                          |
+| F07     | Awaited saves, pending controls, retained session drafts, stable edit mounting, version conflicts.                                           |
+| F08     | Server schemas, bounded payloads/boards, defensive reads, quarantine and a UI error boundary.                                                |
+| F09     | Identity-deduplicated interval matching and overlap normalization.                                                                           |
+| F10     | Calendar wall-clock conversion, explicit reference week, precise minutes, midnight option, dated event exports.                              |
+| F11     | Atomic transaction for group publication and history; rollback tested after an injected write failure.                                       |
+| F12     | Board/attendance/tier/role validation, foreign keys, unique member/event and cascading cleanup.                                              |
+| F13     | Per-event cancellation and archive instead of broad Coffee clearing; profiles preserved.                                                     |
+| F14     | Central HTTP exception handling, database readiness, retryable initialization, safe error responses.                                         |
+| F15     | Native SSE reconnection, heartbeat, cleanup, focus refresh and polling for missed/multi-instance changes.                                    |
+| F16     | Explicit reviewed publication; serialized transactions, required revisions and idempotent character creation.                                |
+| F17     | Stable group IDs and explicit seat editor; sparse IDs preserved.                                                                             |
+| F18     | Updated dependencies/lockfile; loopback development; unused native SQLite removed.                                                           |
+| F19     | Strict TypeScript, appropriate type packages, tests/build in CI.                                                                             |
+| F20     | Separate versioned schema, local libSQL, explicit tested V2 import; obsolete setup and AI settings removed.                                  |
+| F21     | One serialized/coalesced snapshot refresh path; no optimistic duplicate append; visible outage state.                                        |
+| F22     | Responsive controls, labels and pressed state, destructive-action confirmation with focus handling, awaited clipboard actions, compiled CSS. |
+
+## Evidence
+
+- `npm run check`: 36 tests passing at release verification, strict typecheck and production build successful.
+- `tests/results.txt`: captured verification output (updated during release checks).
+- `audit/npm-audit-v3*.json`: current full and production-only dependency reports.
+- `audit/browser-v3.md`: browser verification observations.
+- Tests use real in-memory libSQL, actual loopback HTTP, and injected transaction failures. No live community database was used.
+- The V2 import test fingerprints source rows before/after and verifies both event days, single-role JSON repair, quarantine, idempotent re-import, and invalidated legacy credentials. A separate test confirms V3 schema initialization preserves an existing V2 table.
+
+## Scope and remaining limits
+
+The code is ready to be configured and deployed from the V3 repository; pushing source is not a hosting deployment. Production backup/restore, provider-specific settings, remote libSQL failure behavior and multi-instance performance still need deployment checks. The live V2 service/database have not been changed.
+
+Private edit keys offer account-free ownership, not verified community identity. Different keys can represent the same human; real Discord/account membership requires a separate authentication integration. Public roster/contact visibility is explicit. Organizer-generated, expiring single-use claims provide recovery and migration ownership transfer.
+
+Automatic groups maximize complete role compositions within each tier; they do not yet optimize fairness, rating, class utility or friendships. Review remains an organizer decision. Calendar and Discord exports are included; automated reminders, bot integration, and check-in are not part of this release.
+
+Group history is retained in the database for operator recovery; there is no automatic history-restore UI. Archived events preserve their records, but explicitly removing a character also removes that character's signups as the confirmation states. The old V2 recurring-day assignments are intentionally replaced by reviewed V3 proposals.
+
+No software audit can establish that every possible defect has been eliminated. The repairs cover the identified findings and the checked workflows; the evidence and remaining deployment checks are recorded here for handoff.

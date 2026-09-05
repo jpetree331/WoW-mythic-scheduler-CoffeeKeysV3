@@ -1,0 +1,1 @@
+components/AvailabilityForm.tsx(90,114): error TS2339: Property 'length' does not exist on type 'unknown'.

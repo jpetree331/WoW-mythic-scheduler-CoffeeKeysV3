@@ -1,0 +1,522 @@
+TAP version 13
+# (node:86544) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: control: five distinct single-role players form one valid group
+ok 1 - control: five distinct single-role players form one valid group
+  ---
+  duration_ms: 1.8313
+  type: 'test'
+  ...
+# Subtest: F03: coffee grouping must not put one flexible player in two seats
+not ok 2 - F03: coffee grouping must not put one flexible player in two seats
+  ---
+  duration_ms: 0.5805
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:22:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Four people produced 1 five-seat group; IDs: flex,flex,1,2,3
+
+    1 !== 0
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:25:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: F09: duplicate availability must not create a full group from three people
+not ok 3 - F09: duplicate availability must not create a full group from three people
+  ---
+  duration_ms: 15.7904
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:28:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Returned IDs: tank,healer,dps,dps,dps
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:32:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: control: Pacific evening crosses into the next Eastern day
+ok 4 - control: Pacific evening crosses into the next Eastern day
+  ---
+  duration_ms: 1.7295
+  type: 'test'
+  ...
+# Subtest: F10: spring DST transition must preserve the entered wall-clock time
+not ok 5 - F10: spring DST transition must preserve the entered wall-clock time
+  ---
+  duration_ms: 0.743
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:43:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Noon local must stay noon Eastern
+
+    780 !== 720
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 720
+  actual: 780
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:50:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F10: midnight must format as AM
+not ok 6 - F10: midnight must format as AM
+  ---
+  duration_ms: 0.25
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:54:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + '12:00 PM'
+    - '12:00 AM'
+             ^
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '12:00 AM'
+  actual: '12:00 PM'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:54:54)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F01: public player list must not expose the owner credential
+not ok 7 - F01: public player list must not expose the owner credential
+  ---
+  duration_ms: 3.8734
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:56:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'private-owner'
+    - undefined
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: 'private-owner'
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:59:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F01: a public reader must not be able to replay a leaked credential to delete
+not ok 8 - F01: a public reader must not be able to replay a leaked credential to delete
+  ---
+  duration_ms: 2.3855
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Unauthenticated listing allowed another browser to delete the player
+
+    200 !== 401
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 401
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:67:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F02: omitted ADMIN_TOKEN must not accept the source-code password
+not ok 9 - F02: omitted ADMIN_TOKEN must not accept the source-code password
+  ---
+  duration_ms: 2.0387
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:70:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    200 !== 401
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 401
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:72:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: control: unrelated owner credential is denied
+ok 10 - control: unrelated owner credential is denied
+  ---
+  duration_ms: 2.4919
+  type: 'test'
+  ...
+# Subtest: F04: one player can retain assignments for both weekend days
+not ok 11 - F04: one player can retain assignments for both weekend days
+  ---
+  duration_ms: 2.3498
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:82:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+    -   'sat',
+        'sun'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'sat'
+    1: 'sun'
+  actual:
+    0: 'sun'
+  operator: 'deepStrictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:87:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F05: editing only notes preserves coffee and class fields
+not ok 12 - F05: editing only notes preserves coffee and class fields
+  ---
+  duration_ms: 3.3526
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:90:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + undefined
+    - '{"attendSat":true,"attendSun":true,"keyTier":"2-5"}'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '{"attendSat":true,"attendSun":true,"keyTier":"2-5"}'
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:95:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F08: server must reject structurally invalid availability
+not ok 13 - F08: server must reject structurally invalid availability
+  ---
+  duration_ms: 2.3144
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:99:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Accepted payload later makes findOverlaps throw: slots is not iterable
+
+    201 !== 400
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 400
+  actual: 201
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:103:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F08: matcher should not crash the board on one malformed saved row
+not ok 14 - F08: matcher should not crash the board on one malformed saved row
+  ---
+  duration_ms: 0.3329
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:106:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception.
+    Actual message: "slots is not iterable"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'slots is not iterable'
+  name: 'TypeError'
+  stack: |-
+    findOverlaps (eval at loadTS (E:\git\WoW-Scheduler-CoffeeV2\audit\harness.cjs:28:3), <anonymous>:62:29)
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:107:29
+    getActual (node:assert:530:5)
+    Function.doesNotThrow (node:assert:696:32)
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:107:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'doesNotThrow'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:107:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F11: batch replacement must roll back when a later write fails
+not ok 15 - F11: batch replacement must roll back when a later write fails
+  ---
+  duration_ms: 2.2118
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:110:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Existing assignments were deleted before failed insert
+
+    0 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:115:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F12: a batch for one board must not change another board player
+not ok 16 - F12: a batch for one board must not change another board player
+  ---
+  duration_ms: 2.2892
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:118:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    200 !== 400
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 400
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    using.env.ADMIN_TOKEN (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:123:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F13: clearing one event must preserve the weekly availability record
+not ok 17 - F13: clearing one event must preserve the weekly availability record
+  ---
+  duration_ms: 2.042
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:126:1'
+  failureType: 'testCodeFailure'
+  error: 'Weekly signup was deleted together with the Saturday event'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:129:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F14: a database outage must become an HTTP response, not an unhandled rejection
+not ok 18 - F14: a database outage must become an HTTP response, not an unhandled rejection
+  ---
+  duration_ms: 1.8275
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:132:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted rejection.
+    Actual message: "Injected database outage"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Injected database outage'
+  stack: |-
+    Object.execute (E:\git\WoW-Scheduler-CoffeeV2\audit\harness.cjs:40:53)
+    getPlayer (server/db.cjs:258:31)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async server/server.cjs:300:19
+    async Object.request (E:\git\WoW-Scheduler-CoffeeV2\audit\harness.cjs:73:5)
+    async waitForActual (node:assert:565:5)
+    async Function.doesNotReject (node:assert:706:33)
+    async E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:134:3
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+  operator: 'doesNotReject'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:134:3
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F15: transient EventSource error must leave automatic reconnection enabled
+not ok 19 - F15: transient EventSource error must leave automatic reconnection enabled
+  ---
+  duration_ms: 15.2424
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:137:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Client permanently closes its event stream at the first error
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:146:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F03: server auto-assignment must use secondary roles to complete feasible groups
+not ok 20 - F03: server auto-assignment must use secondary roles to complete feasible groups
+  ---
+  duration_ms: 6.463
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:151:1'
+  failureType: 'testCodeFailure'
+  error: 'Five compatible players were split because only roles[0] was considered'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:158:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F16: concurrent signups must not overfill the DPS seats in one group
+not ok 21 - F16: concurrent signups must not overfill the DPS seats in one group
+  ---
+  duration_ms: 3.763
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:161:1'
+  failureType: 'testCodeFailure'
+  error: 'DPS counts by group: 6'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:166:10
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async using (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:12:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F17: reassignment menu must include the actual sparse group numbers
+not ok 22 - F17: reassignment menu must include the actual sparse group numbers
+  ---
+  duration_ms: 143.7988
+  type: 'test'
+  location: 'E:\\git\\WoW-Scheduler-CoffeeV2\\audit\\regressions.test.cjs:169:1'
+  failureType: 'testCodeFailure'
+  error: 'Existing Group 3 is missing from the dropdown; New Group also calculates 3'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (E:\git\WoW-Scheduler-CoffeeV2\audit\regressions.test.cjs:177:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 3
+# fail 19
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 488.812

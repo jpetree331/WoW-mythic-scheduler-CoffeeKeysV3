@@ -1,404 +1,590 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Player, Match, Role } from './types';
-import AvailabilityForm from './components/AvailabilityForm';
-import SummaryDisplay from './components/SummaryDisplay';
-import { findOverlaps, isFullGroup } from './services/matchingService';
-import { fetchPlayers, createPlayer, deletePlayer as apiDeletePlayer, clearPlayers as apiClearPlayers, clearGeneralPlayers as apiClearGeneralPlayers, clearCoffeePlayers, setAdminToken, subscribeToUpdates, getAdminToken, clearAdminToken, updatePlayer as apiUpdatePlayer, getClientId, fetchBoardSettings, updateBoardSettings, verifyAdminToken } from './services/api';
-import CoffeeKeysPanel from './components/CoffeeKeysPanel';
-import { SAMPLE_PLAYERS } from './services/sampleData';
-import { filterCoffeeAttendees } from './services/coffeeGrouping';
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Player, Snapshot } from "./types";
+import AvailabilityForm from "./components/AvailabilityForm";
+import CoffeeKeysPanel from "./components/CoffeeKeysPanel";
+import SummaryDisplay from "./components/SummaryDisplay";
+import EventCreator from "./components/EventCreator";
+import {
+  adminToken,
+  board,
+  fetchSnapshot,
+  ownerKey,
+  request,
+  restoreKey,
+  setAdminToken,
+  subscribeToUpdates,
+} from "./services/api";
 
-// Admin UI visibility: only the project owner's browser (by clientId) sees the Set Admin Token button.
-const ADMIN_CLIENT_ID = (import.meta as any).env?.VITE_ADMIN_CLIENT_ID as string | undefined;
-
-
-const App: React.FC = () => {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [roleFilters, setRoleFilters] = useState<Set<Role>>(new Set());
-  const [sortOption, setSortOption] = useState<'groupSize' | 'time' | 'fullGroups'>('groupSize');
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [editing, setEditing] = useState<Player | null>(null);
-  const [timezoneFilter, setTimezoneFilter] = useState<string>('all');
-  const [boardTitle, setBoardTitle] = useState<string>('Coffee & Keys M+');
-  const [showSamples, setShowSamples] = useState<boolean>(() => {
-    try { return localStorage.getItem('mff_show_samples') === '1'; } catch { return false; }
-  });
-  const displayPlayers = useMemo(() => (isAdmin && showSamples) ? [...players, ...SAMPLE_PLAYERS] : players, [players, isAdmin, showSamples]);
-  const [coffeeView, setCoffeeView] = useState<null | 'sat' | 'sun'>(null);
-  const hasAvailability = (p: Player) => {
-    try { return Object.values(p.availability||{}).some((arr:any)=> Array.isArray(arr) && arr.length>0); } catch { return false; }
-  };
-  const generalPlayers = useMemo(()=> displayPlayers.filter(hasAvailability), [displayPlayers]);
-  const coffeeDayPlayers = useMemo(()=> coffeeView ? filterCoffeeAttendees(displayPlayers, coffeeView) : [], [displayPlayers, coffeeView]);
-  const visiblePlayers = useMemo(()=> {
-    if (isAdmin && coffeeView) return coffeeDayPlayers;
-    return generalPlayers;
-  }, [isAdmin, coffeeView, generalPlayers, coffeeDayPlayers]);
-  const myClientId = getClientId();
-  const isOwner = ADMIN_CLIENT_ID ? myClientId === ADMIN_CLIENT_ID : false;
-
+export default function App() {
+  const [snapshot, setSnapshot] = useState<Snapshot>();
+  const [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
+    [connected, setConnected] = useState(false);
+  const [tab, setTab] = useState<"events" | "weekly">("events");
+  const [editor, setEditor] = useState<{ player?: Player; session: number }>();
+  const [showAdmin, setShowAdmin] = useState(false),
+    [password, setPassword] = useState("");
+  const [showKeys, setShowKeys] = useState(false),
+    [keyInput, setKeyInput] = useState("");
+  const [claimInput, setClaimInput] = useState(""),
+    [claimCode, setClaimCode] = useState("");
+  const [showArchive, setShowArchive] = useState(false),
+    [deleting, setDeleting] = useState<Player>();
+  const [busy, setBusy] = useState(false),
+    [titleDraft, setTitleDraft] = useState("");
+  const mounted = useRef(true),
+    pending = useRef(false),
+    flight = useRef<Promise<void> | null>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   useEffect(() => {
-    const calculatedMatches = findOverlaps(displayPlayers);
-    setMatches(calculatedMatches);
-  }, [displayPlayers]);
-
-  // Initial load from backend
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await fetchPlayers();
-        setPlayers(data);
+    if (!deleting) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !busy) setDeleting(undefined);
+      if (e.key === "Tab") {
+        const buttons = [
+          ...(dialogRef.current?.querySelectorAll<HTMLButtonElement>(
+            "button:not(:disabled)",
+          ) || []),
+        ];
+        const first = buttons[0],
+          last = buttons.at(-1);
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handle);
+    return () => {
+      document.removeEventListener("keydown", handle);
+      previous?.focus();
+    };
+  }, [deleting, busy]);
+  const refresh = useCallback((): Promise<void> => {
+    pending.current = true;
+    if (flight.current) return flight.current;
+    flight.current = (async () => {
+      do {
+        pending.current = false;
         try {
-          const board = await fetchBoardSettings();
-          if (board && typeof board.title === 'string' && board.title.trim().length > 0) {
-            setBoardTitle(board.title);
+          const next = await fetchSnapshot();
+          if (mounted.current) {
+            setSnapshot(next);
+            setError("");
           }
         } catch (e) {
-          // ignore board settings failure; keep default title
+          if (mounted.current)
+            setError(e instanceof Error ? e.message : "Unable to refresh.");
         }
-      } catch (e) {
-        console.error('Failed to load players', e);
-      }
-    })();
-    // Verify admin token (if any) before showing admin controls
-    (async () => {
-      try {
-        const token = getAdminToken();
-        if (token) {
-          const ok = await verifyAdminToken();
-          setIsAdmin(!!ok);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch { setIsAdmin(false); }
-    })();
-    // Subscribe to live updates
-    const unsubscribe = subscribeToUpdates(async () => {
-      try {
-        const data = await fetchPlayers();
-        setPlayers(data);
-        try {
-          const board = await fetchBoardSettings();
-          if (board && typeof board.title === 'string') {
-            setBoardTitle(board.title || 'Coffee & Keys M+');
-          }
-        } catch {
-          // ignore
-        }
-      } catch (e) {
-        console.error('Failed to refresh players after update', e);
-      }
+      } while (pending.current && mounted.current);
+    })().finally(() => {
+      flight.current = null;
     });
-    return () => unsubscribe();
+    return flight.current;
   }, []);
-
-  const handleAddPlayer = async (playerData: Omit<Player, 'id'>) => {
+  useEffect(() => {
+    mounted.current = true;
+    void refresh();
+    const stop = subscribeToUpdates(() => {
+      void refresh();
+    }, setConnected);
+    return () => {
+      mounted.current = false;
+      stop();
+    };
+  }, [refresh]);
+  const players = snapshot?.players || [],
+    isAdmin = !!snapshot?.isAdmin;
+  async function action(fn: () => Promise<unknown>, success: string) {
+    setBusy(true);
+    setError("");
     try {
-      if (editing) {
-        const updated = await apiUpdatePlayer(editing.id, playerData);
-        // Preserve clientId and board from existing player to avoid losing ownership in UI state
-        setPlayers(prev => prev.map(p => p.id === editing.id ? { ...p, ...updated } as Player : p));
-        setEditing(null);
-      } else {
-        const created = await createPlayer(playerData);
-        setPlayers(prev => [...prev, created]);
-      }
+      await fn();
+      setNotice(success);
+      await refresh();
     } catch (e) {
-      console.error('Failed to add player', e);
-      alert('Failed to submit availability. Please try again.');
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
     }
-  };
-  
-  const handleDeletePlayer = async (playerId: string) => {
-    if (playerId.startsWith('sample-')) {
-      alert('Sample player; cannot delete. Toggle off sample data instead.');
-      return;
-    }
-    try {
-      await apiDeletePlayer(playerId);
-      setPlayers(prevPlayers => prevPlayers.filter(p => p.id !== playerId));
-    } catch (e) {
-      console.error('Failed to delete player', e);
-      if (!getAdminToken()) {
-        const token = prompt('Admin token required to delete. Enter token:');
-        if (token) setAdminToken(token);
-      } else {
-        alert('Failed to delete player.');
-      }
-    }
-  };
-  
-  const handleClearAllPlayers = async () => {
-    if (!confirm('This will remove ALL players from the shared list. Continue?')) return;
-    try {
-      await apiClearPlayers();
-      setPlayers([]);
-    } catch (e) {
-      console.error('Failed to clear players', e);
-      const token = prompt('Admin token required to clear all. Enter token:');
-      if (token) {
-        setAdminToken(token);
-        try {
-          await apiClearPlayers();
-          setPlayers([]);
-        } catch {
-          alert('Failed to clear players.');
-        }
-      }
-    }
-  };
-
-  const handleClearGeneralPlayers = async () => {
-    if (!confirm('This will remove all general availability players (not Coffee & Keys players). Continue?')) return;
-    try {
-      await apiClearGeneralPlayers();
-      // Refresh players to get updated data
-      const data = await fetchPlayers();
-      setPlayers(data);
-    } catch (e) {
-      console.error('Failed to clear general players', e);
-      alert('Failed to clear general players.');
-    }
-  };
-
-  const handleClearCoffeeSat = async () => {
-    if (!confirm('This will clear all Coffee & Keys Saturday signups and assignments. Continue?')) return;
-    try {
-      await clearCoffeePlayers('sat');
-      // Refresh players to get updated data
-      const data = await fetchPlayers();
-      setPlayers(data);
-    } catch (e) {
-      console.error('Failed to clear Coffee & Keys Sat', e);
-      alert('Failed to clear Coffee & Keys Saturday data.');
-    }
-  };
-
-  const handleClearCoffeeSun = async () => {
-    if (!confirm('This will clear all Coffee & Keys Sunday signups and assignments. Continue?')) return;
-    try {
-      await clearCoffeePlayers('sun');
-      // Refresh players to get updated data
-      const data = await fetchPlayers();
-      setPlayers(data);
-    } catch (e) {
-      console.error('Failed to clear Coffee & Keys Sun', e);
-      alert('Failed to clear Coffee & Keys Sunday data.');
-    }
-  };
-
-  // removed sample loader in production
-
-  const toggleRoleFilter = (role: Role) => {
-    setRoleFilters(prev => {
-      const newFilters = new Set(prev);
-      if (newFilters.has(role)) {
-        newFilters.delete(role);
-      } else {
-        newFilters.add(role);
-      }
-      return newFilters;
-    });
-  };
-
-  const sortedMatches = useMemo(() => {
-    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return [...matches].sort((a, b) => {
-      if (sortOption === 'fullGroups') {
-        const aIsFull = isFullGroup(a);
-        const bIsFull = isFullGroup(b);
-        if (aIsFull !== bIsFull) return aIsFull ? -1 : 1;
-      }
-      
-      if (sortOption === 'groupSize' || sortOption === 'fullGroups') {
-         if (b.players.length !== a.players.length) {
-            return b.players.length - a.players.length;
-         }
-      }
-
-      if (dayOrder.indexOf(a.day) !== dayOrder.indexOf(b.day)) {
-        return dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
-      }
-      return a.start - b.start;
-    });
-  }, [matches, sortOption]);
-
-  const filteredMatches = useMemo(() => {
-    if (roleFilters.size === 0) {
-      let res = sortedMatches;
-      if (timezoneFilter !== 'all') {
-        res = res.filter(match => match.players.some(p => p.timezone === timezoneFilter));
-      }
-      return res;
-    }
-    let res = sortedMatches.filter(match => 
-      Array.from(roleFilters).every(filterRole => 
-        match.players.some(player => (player.roles||[]).includes(filterRole))
-      )
-    );
-    if (timezoneFilter !== 'all') {
-      res = res.filter(match => match.players.some(p => p.timezone === timezoneFilter));
-    }
-    return res;
-  }, [sortedMatches, roleFilters, timezoneFilter]);
-
+  }
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 tracking-wider" style={{textShadow: '0 0 10px rgba(250, 204, 21, 0.5)'}}>
-            {boardTitle}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <header className="flex flex-col md:flex-row gap-5 justify-between mb-6">
+        <div>
+          <p className="text-amber-400 text-sm font-bold tracking-widest uppercase">
+            Community Mythic+
+          </p>
+          <h1 className="text-4xl font-bold mt-2 text-amber-200 break-words">
+            {snapshot?.title || "Coffee & Keys"}
           </h1>
-          {showSamples && (
-            <span className="mt-2 inline-block text-xs font-semibold bg-emerald-600/20 text-emerald-300 border border-emerald-500/50 rounded-full px-2 py-0.5">
-              Sample Data ON
-            </span>
-          )}
-          <p className="mt-2 text-lg text-gray-400">Coordinate your weekly keys with ease.</p>
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <button
-              onClick={() => {
-                const url = new URL(window.location.href);
-                if (!url.searchParams.get('board')) {
-                  url.searchParams.set('board', 'default');
-                }
-                navigator.clipboard.writeText(url.toString());
-                alert('Shareable link copied to clipboard');
-              }}
-              className="text-sm bg-gray-700 hover:bg-gray-600 text-yellow-300 font-semibold py-1 px-3 rounded-md transition-colors"
-            >
-              Copy Share Link
-            </button>
-            {isAdmin && (
-              <button
-                onClick={async () => {
-                  const nextTitle = prompt('Set board title:', boardTitle || 'Coffee & Keys M+');
-                  if (nextTitle !== null) {
-                    try {
-                      const updated = await updateBoardSettings({ title: nextTitle.trim() || null });
-                      setBoardTitle((updated && updated.title) || 'Coffee & Keys M+');
-                    } catch (e) {
-                      alert('Failed to update title. Make sure admin password is set.');
-                    }
-                  }
-                }}
-                className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-1 px-3 rounded-md transition-colors"
-              >
-                Change Title
-              </button>
-            )}
-            {isAdmin && (
-              <>
-                <button
-                  onClick={() => setCoffeeView(null)}
-                  className={`text-sm font-semibold py-1 px-3 rounded-md transition-colors ${coffeeView===null ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
-                >
-                  General
-                </button>
-                <button
-                  onClick={() => setCoffeeView(prev => prev === 'sat' ? null : 'sat')}
-                  className={`text-sm font-semibold py-1 px-3 rounded-md transition-colors ${coffeeView==='sat' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
-                >
-                  Coffee & Keys Sat
-                </button>
-                <button
-                  onClick={() => setCoffeeView(prev => prev === 'sun' ? null : 'sun')}
-                  className={`text-sm font-semibold py-1 px-3 rounded-md transition-colors ${coffeeView==='sun' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`}
-                >
-                  Coffee & Keys Sun
-                </button>
-              </>
-            )}
-            <button
-              onClick={async () => {
-                const token = prompt('Enter admin password:');
-                if (!token) return;
-                setAdminToken(token);
-                const ok = await verifyAdminToken();
-                if (ok) {
-                  setIsAdmin(true);
-                } else {
-                  clearAdminToken();
-                  setIsAdmin(false);
-                  alert('Invalid admin password.');
-                }
-              }}
-              className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-1 px-3 rounded-md transition-colors"
-            >
-              Enter Admin PW
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => { clearAdminToken(); setIsAdmin(false); }}
-                className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-1 px-3 rounded-md transition-colors"
-              >
-                Clear Admin Token
-              </button>
-            )}
-            {isAdmin && (
-              <button
-                onClick={() => {
-                  const next = !showSamples;
-                  setShowSamples(next);
-                  try { localStorage.setItem('mff_show_samples', next ? '1' : '0'); } catch {}
-                }}
-                className="text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-1 px-3 rounded-md transition-colors"
-              >
-                {showSamples ? 'Hide Sample Data' : 'Show Sample Data'}
-              </button>
-            )}
-          </div>
-        </header>
-        
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <AvailabilityForm onSubmit={handleAddPlayer} initial={editing ? { ...editing } : undefined} onCancelEdit={() => setEditing(null)} />
-          </div>
-          <div className="lg:col-span-2">
-            {isAdmin && coffeeView ? (
-              <div className="space-y-6">
-                <CoffeeKeysPanel allPlayers={displayPlayers} day={coffeeView} />
-                <SummaryDisplay
-                  matches={[]}
-                  allPlayers={coffeeDayPlayers}
-                  onDeletePlayer={handleDeletePlayer}
-                  onClearAllPlayers={coffeeView === 'sat' ? handleClearCoffeeSat : handleClearCoffeeSun}
-                  roleFilters={roleFilters}
-                  toggleRoleFilter={toggleRoleFilter}
-                  sortOption={sortOption}
-                  setSortOption={setSortOption}
-                  showAdminControls={isAdmin}
-                  myClientId={myClientId}
-                  onEditPlayer={(p)=> setEditing(p)}
-                  timezoneFilter={timezoneFilter}
-                  setTimezoneFilter={setTimezoneFilter}
-                  showMatches={false}
-                  coffeeView={coffeeView}
-                />
-              </div>
-            ) : (
-              <SummaryDisplay
-                matches={filteredMatches}
-                allPlayers={visiblePlayers}
-                onDeletePlayer={handleDeletePlayer}
-                onClearAllPlayers={handleClearGeneralPlayers}
-                roleFilters={roleFilters}
-                toggleRoleFilter={toggleRoleFilter}
-                sortOption={sortOption}
-                setSortOption={setSortOption}
-                showAdminControls={isAdmin}
-                myClientId={myClientId}
-                onEditPlayer={(p)=> setEditing(p)}
-                timezoneFilter={timezoneFilter}
-                setTimezoneFilter={setTimezoneFilter}
-              />
-            )}
-          </div>
-        </main>
+          <p className="text-slate-400 mt-2">
+            Find your people. Make time for keys.
+          </p>
+          <p className="muted mt-2">
+            Board: {board} ·{" "}
+            {connected
+              ? "Live updates connected"
+              : "Reconnecting · checking every 30 seconds"}
+          </p>
+        </div>
+        <div className="flex flex-wrap content-start gap-2">
+          <button
+            className="btn"
+            onClick={() =>
+              action(
+                () => navigator.clipboard.writeText(window.location.href),
+                "Board link copied.",
+              )
+            }
+          >
+            Share board
+          </button>
+          <button className="btn" onClick={() => setShowKeys((s) => !s)}>
+            My edit key
+          </button>
+          <button
+            className="btn"
+            onClick={() => {
+              if (isAdmin) {
+                setAdminToken("");
+                setNotice("Organizer signed out.");
+                void refresh();
+              } else setShowAdmin((s) => !s);
+            }}
+          >
+            {isAdmin ? "Sign out organizer" : "Organizer sign-in"}
+          </button>
+        </div>
+      </header>
+      <div aria-live="polite" className="mb-4">
+        {notice && (
+          <p className="rounded-lg border border-emerald-800 bg-emerald-950 text-emerald-200 p-3">
+            {notice}
+          </p>
+        )}
       </div>
+      {error && (
+        <div className="error mb-4" role="alert">
+          <p>{error}</p>
+          <button className="btn mt-2" onClick={() => void refresh()}>
+            Retry refresh
+          </button>
+        </div>
+      )}
+      {showAdmin && !isAdmin && (
+        <form
+          className="panel mb-4 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void action(async () => {
+              setAdminToken(password);
+              try {
+                await request("/admin");
+                setShowAdmin(false);
+                setPassword("");
+              } catch (e) {
+                setAdminToken("");
+                throw e;
+              }
+            }, "Organizer signed in for this tab.");
+          }}
+        >
+          <label htmlFor="admin-token" className="label">
+            Organizer access token
+          </label>
+          <input
+            id="admin-token"
+            type="password"
+            autoComplete="off"
+            className="field"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <p className="muted">
+            The organizer token is configured on the server. There is no default
+            password.
+          </p>
+          <button className="btn primary" disabled={busy}>
+            Sign in
+          </button>
+        </form>
+      )}
+      {showKeys && (
+        <section className="panel mb-4 space-y-3">
+          <h2 className="font-bold">Keep access to your characters</h2>
+          <p className="muted">
+            Your private edit key controls your characters. Save it somewhere
+            private to restore access on another browser. Never post it with
+            your board link. For an older character, ask an organizer for a
+            claim code.
+          </p>
+          <button
+            className="btn"
+            onClick={() =>
+              action(
+                () => navigator.clipboard.writeText(ownerKey()),
+                "Private edit key copied. Save it securely.",
+              )
+            }
+          >
+            Copy my private edit key
+          </button>
+          <form
+            className="space-y-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void action(async () => {
+                restoreKey(keyInput);
+                setEditor(undefined);
+                setKeyInput("");
+              }, "Edit key restored.");
+            }}
+          >
+            <label htmlFor="restore-key" className="label">
+              Restore a saved edit key
+            </label>
+            <input
+              id="restore-key"
+              type="password"
+              autoComplete="off"
+              className="field"
+              required
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+            />
+            <button className="btn" disabled={busy}>
+              Restore access
+            </button>
+          </form>
+        </section>
+      )}
+      {!snapshot ? (
+        <p className="panel" role="status">
+          {error
+            ? "The board is unavailable. Your drafts are preserved."
+            : "Loading the community board…"}
+        </p>
+      ) : (
+        <>
+          {showKeys && (
+            <form
+              className="panel mb-4 space-y-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void action(async () => {
+                  await request("/claim", "POST", { code: claimInput });
+                  setClaimInput("");
+                }, "Character access restored to this browser.");
+              }}
+            >
+              <label className="label" htmlFor="claim-code">
+                Claim a migrated character
+              </label>
+              <p className="muted">
+                Ask an organizer for a single-use claim code. It expires after
+                24 hours.
+              </p>
+              <input
+                className="field"
+                id="claim-code"
+                type="password"
+                autoComplete="off"
+                value={claimInput}
+                required
+                onChange={(e) => setClaimInput(e.target.value)}
+              />
+              <button className="btn" disabled={busy}>
+                Claim character
+              </button>
+            </form>
+          )}
+          {isAdmin && claimCode && (
+            <section className="panel mb-4 space-y-2">
+              <h2 className="font-bold">Single-use ownership claim</h2>
+              <p className="muted">
+                Share this code privately with the character's owner. It allows
+                them to take over editing and expires in 24 hours.
+              </p>
+              <code className="block break-all">{claimCode}</code>
+              <button
+                className="btn"
+                onClick={() =>
+                  action(
+                    () => navigator.clipboard.writeText(claimCode),
+                    "Claim code copied.",
+                  )
+                }
+              >
+                Copy claim code
+              </button>
+              <button className="btn ml-2" onClick={() => setClaimCode("")}>
+                Hide code
+              </button>
+            </section>
+          )}
+          <div className="flex flex-wrap gap-2 mb-5">
+            <button
+              className={`btn ${tab === "events" ? "primary" : ""}`}
+              aria-pressed={tab === "events"}
+              onClick={() => setTab("events")}
+            >
+              Dated events
+            </button>
+            <button
+              className={`btn ${tab === "weekly" ? "primary" : ""}`}
+              aria-pressed={tab === "weekly"}
+              onClick={() => setTab("weekly")}
+            >
+              Weekly availability
+            </button>
+            <button
+              className="btn"
+              onClick={() => setEditor({ session: Date.now() })}
+            >
+              Add my character
+            </button>
+          </div>
+          <main className="grid lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)] gap-6 items-start">
+            <aside className="space-y-5">
+              {editor && (
+                <AvailabilityForm
+                  key={editor.session}
+                  initial={editor.player}
+                  onCancel={() => setEditor(undefined)}
+                  onSave={async (data) => {
+                    await request(
+                      editor.player
+                        ? `/players/${editor.player.id}`
+                        : "/players",
+                      editor.player ? "PATCH" : "POST",
+                      data,
+                    );
+                    setEditor(undefined);
+                    setNotice("Character saved. Choose an event to sign up.");
+                    await refresh();
+                  }}
+                />
+              )}
+              <section className="panel">
+                <h2 className="font-bold text-xl text-amber-300">
+                  Characters ({players.length})
+                </h2>
+                <p className="muted mt-2">
+                  Your characters appear first. Everyone can see the roster;
+                  only you and organizers can change your entries.
+                </p>
+                <ul className="divide-y divide-slate-700 mt-3">
+                  {[...players]
+                    .sort((a, b) => Number(b.isMine) - Number(a.isMine))
+                    .map((p) => (
+                      <li className="py-4 space-y-2" key={p.id}>
+                        <h3 className="font-semibold break-words">
+                          {p.name}{" "}
+                          {p.isMine && (
+                            <span className="text-xs text-emerald-300">
+                              · Yours
+                            </span>
+                          )}
+                        </h3>
+                        <p className="text-sm text-slate-300">
+                          {p.roles.join(" / ")}
+                          {p.wowClass && ` · ${p.wowClass}`}
+                        </p>
+                        {p.discordName && (
+                          <p className="muted break-words">
+                            Discord: {p.discordName}
+                          </p>
+                        )}
+                        {p.notes && (
+                          <p className="muted break-words">{p.notes}</p>
+                        )}
+                        {p.canEdit && (
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              className="btn text-sm"
+                              onClick={() =>
+                                setEditor({ player: p, session: Date.now() })
+                              }
+                            >
+                              Edit {p.name}
+                            </button>
+                            <button
+                              className="btn text-sm"
+                              onClick={() => setDeleting(p)}
+                            >
+                              Remove
+                            </button>
+                            {isAdmin && (
+                              <button
+                                disabled={busy}
+                                className="btn text-sm"
+                                onClick={() =>
+                                  action(async () => {
+                                    const result = await request<{
+                                      code: string;
+                                    }>(`/players/${p.id}/claim`, "POST", {});
+                                    setClaimCode(result.code);
+                                  }, "Ownership claim generated.")
+                                }
+                              >
+                                Create ownership claim
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+                {players.length === 0 && (
+                  <p className="muted mt-4">
+                    No characters yet. Add yours to get started.
+                  </p>
+                )}
+              </section>
+              {isAdmin && (
+                <form
+                  className="panel space-y-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void action(
+                      () => request("/board", "PATCH", { title: titleDraft }),
+                      "Board title saved.",
+                    );
+                  }}
+                >
+                  <label className="label" htmlFor="board-title">
+                    Board title
+                  </label>
+                  <input
+                    className="field"
+                    id="board-title"
+                    placeholder={snapshot.title}
+                    value={titleDraft}
+                    required
+                    maxLength={100}
+                    onChange={(e) => setTitleDraft(e.target.value)}
+                  />
+                  <button className="btn" disabled={busy}>
+                    Save title
+                  </button>
+                </form>
+              )}
+            </aside>
+            <div className="space-y-5 min-w-0">
+              {tab === "weekly" ? (
+                <SummaryDisplay players={players} />
+              ) : (
+                <>
+                  {isAdmin && (
+                    <EventCreator
+                      onCreate={async (input) => {
+                        await request("/events", "POST", input);
+                        setNotice("Event created. Members can now sign up.");
+                        await refresh();
+                      }}
+                    />
+                  )}
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={showArchive}
+                      onChange={(e) => setShowArchive(e.target.checked)}
+                    />
+                    Show archived events
+                  </label>
+                  {snapshot.events
+                    .filter((e) => showArchive || e.status !== "completed")
+                    .map((event) => (
+                      <CoffeeKeysPanel
+                        key={event.id}
+                        event={event}
+                        players={players}
+                        isAdmin={isAdmin}
+                        refresh={refresh}
+                        notice={setNotice}
+                      />
+                    ))}
+                  {!snapshot.events.some(
+                    (e) => showArchive || e.status !== "completed",
+                  ) && (
+                    <section className="panel">
+                      <h2 className="text-xl font-bold">
+                        The next keys are brewing
+                      </h2>
+                      <p className="muted mt-2">
+                        An organizer can create the next dated event. In the
+                        meantime, save your character and weekly availability.
+                      </p>
+                      {!snapshot.adminConfigured && (
+                        <p className="muted mt-3">
+                          Organizer access has not been configured for this
+                          board yet.
+                        </p>
+                      )}
+                    </section>
+                  )}
+                </>
+              )}
+            </div>
+          </main>
+        </>
+      )}
+      {deleting && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <section
+            ref={dialogRef}
+            className="panel max-w-md"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="remove-title"
+          >
+            <h2 className="text-xl font-bold" id="remove-title">
+              Remove {deleting.name}?
+            </h2>
+            <p className="mt-3 mb-5">
+              This removes the character, weekly availability, and its event
+              signups. To cancel only one event, use “Cancel my signup” on that
+              event instead.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                autoFocus
+                disabled={busy}
+                className="btn"
+                onClick={() => setDeleting(undefined)}
+              >
+                Keep character
+              </button>
+              <button
+                disabled={busy}
+                className="btn danger"
+                onClick={() =>
+                  action(async () => {
+                    await request(`/players/${deleting.id}`, "DELETE", {
+                      version: deleting.version,
+                    });
+                    if (editor?.player?.id === deleting.id)
+                      setEditor(undefined);
+                    setDeleting(undefined);
+                  }, "Character removed.")
+                }
+              >
+                Remove character
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+      <footer className="muted mt-10 border-t border-slate-800 pt-5">
+        Coffee & Keys · Built for community runs, learning together, and one
+        more key.
+      </footer>
     </div>
   );
-};
-
-export default App;
+}

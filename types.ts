@@ -1,47 +1,61 @@
 export enum Role {
-  TANK = 'Tank',
-  HEALER = 'Healer',
-  DPS = 'DPS',
+  TANK = "Tank",
+  HEALER = "Healer",
+  DPS = "DPS",
 }
-
+export type KeyTier = "2-5" | "6-9" | "10+";
 export interface TimeSlot {
-  start: number; // in minutes from midnight
-  end: number;   // in minutes from midnight
+  start: number;
+  end: number;
 }
-
-export type Availability = {
-  [day: string]: TimeSlot[];
-};
-
-export interface Player {
-  id: string;
+export type Availability = Record<string, TimeSlot[]>;
+export interface PlayerInput {
   name: string;
   roles: Role[];
-  timezone: string; // IANA timezone, e.g., 'America/New_York'
+  timezone: string;
   availability: Availability;
-  notes?: string;
-  discordName?: string; // optional Discord handle for contact
-  board?: string; // board slug this player belongs to
-  clientId?: string; // owner id (local browser)
-  // Coffee & Keys event signup (optional)
-  coffee?: {
-    attendSat?: boolean;
-    attendSun?: boolean;
-    keyTier?: '2-5' | '6-9' | '10+';
-  };
-  wowClass?: string; // optional: class for admin info only
-  flexRole?: Role; // optional: flex role (admin info)
-  flexClass?: string; // optional: flex class (admin info)
-  coffeeAssign?: {
-    day?: 'sat' | 'sun';
-    tier?: '2-5' | '6-9' | '10+';
-    groupIndex?: number;
-  };
+  notes: string;
+  discordName: string;
+  wowClass: string;
 }
-
+export interface Player extends PlayerInput {
+  id: string;
+  memberId?: string;
+  version: number;
+  canEdit: boolean;
+  isMine: boolean;
+}
 export interface Match {
   day: string;
   start: number;
   end: number;
   players: Player[];
+}
+export interface Group {
+  id: string;
+  tier: KeyTier;
+  seats: { playerId: string; role: Role }[];
+}
+export interface Signup {
+  playerId: string;
+  tier: KeyTier;
+}
+export interface CoffeeEvent {
+  id: string;
+  title: string;
+  startsAt: string;
+  timezone: string;
+  duration: number;
+  status: "open" | "locked" | "completed";
+  revision: number;
+  published: boolean;
+  signups: Signup[];
+  groups: Group[];
+}
+export interface Snapshot {
+  title: string;
+  players: Player[];
+  events: CoffeeEvent[];
+  isAdmin: boolean;
+  adminConfigured: boolean;
 }

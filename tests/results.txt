@@ -1,0 +1,252 @@
+
+> coffee-keys-v3@3.0.0 check
+> npm run test && npm run build
+
+
+> coffee-keys-v3@3.0.0 test
+> node --test tests/*.test.cjs
+
+TAP version 13
+# Subtest: F15: transient stream errors preserve automatic reconnection and cleanup closes
+ok 1 - F15: transient stream errors preserve automatic reconnection and cleanup closes
+  ---
+  duration_ms: 152.1749
+  type: 'test'
+  ...
+# Subtest: calendar export is escaped, UTF-8 folded, dated and has a stable UID
+ok 2 - calendar export is escaped, UTF-8 folded, dated and has a stable UID
+  ---
+  duration_ms: 25.4159
+  type: 'test'
+  ...
+# Subtest: weekly role matching never gives two alts of one member separate seats
+ok 3 - weekly role matching never gives two alts of one member separate seats
+  ---
+  duration_ms: 0.8734
+  type: 'test'
+  ...
+# Subtest: V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+ok 4 - V2 import preserves source bytes logically, both days and notes; old keys are invalidated
+  ---
+  duration_ms: 25.8559
+  type: 'test'
+  ...
+# Subtest: schema initialization does not modify existing V2 tables
+ok 5 - schema initialization does not modify existing V2 tables
+  ---
+  duration_ms: 2.8451
+  type: 'test'
+  ...
+# Subtest: prototype-named boards do not inherit organizer credentials
+ok 6 - prototype-named boards do not inherit organizer credentials
+  ---
+  duration_ms: 40.5352
+  type: 'test'
+  ...
+# Subtest: event mutation requires a revision even when it is omitted by the caller
+ok 7 - event mutation requires a revision even when it is omitted by the caller
+  ---
+  duration_ms: 15.5919
+  type: 'test'
+  ...
+# Subtest: ambiguous fall clock-change endpoints are skipped rather than overstated
+ok 8 - ambiguous fall clock-change endpoints are skipped rather than overstated
+  ---
+  duration_ms: 2.723
+  type: 'test'
+  ...
+# Subtest: F01: public snapshots expose neither owner keys nor ownership hashes
+ok 9 - F01: public snapshots expose neither owner keys nor ownership hashes
+  ---
+  duration_ms: 4.0443
+  type: 'test'
+  ...
+# Subtest: F02: empty organizer configuration rejects old default passwords
+ok 10 - F02: empty organizer configuration rejects old default passwords
+  ---
+  duration_ms: 8.6029
+  type: 'test'
+  ...
+# Subtest: F03: four people with flexible roles cannot fill five seats
+ok 11 - F03: four people with flexible roles cannot fill five seats
+  ---
+  duration_ms: 0.2667
+  type: 'test'
+  ...
+# Subtest: F03: flexible healer plus dedicated tank forms a valid group
+ok 12 - F03: flexible healer plus dedicated tank forms a valid group
+  ---
+  duration_ms: 0.7731
+  type: 'test'
+  ...
+# Subtest: F03: group planner maximizes complete groups without reuse
+ok 13 - F03: group planner maximizes complete groups without reuse
+  ---
+  duration_ms: 0.2094
+  type: 'test'
+  ...
+# Subtest: F04/F13: different dated events retain independent attendance and assignments
+ok 14 - F04/F13: different dated events retain independent attendance and assignments
+  ---
+  duration_ms: 14.0537
+  type: 'test'
+  ...
+# Subtest: F05: notes-only edit preserves profile and event attendance
+ok 15 - F05: notes-only edit preserves profile and event attendance
+  ---
+  duration_ms: 8.7685
+  type: 'test'
+  ...
+# Subtest: F05: removing a capability removes only its now-invalid assignment
+ok 16 - F05: removing a capability removes only its now-invalid assignment
+  ---
+  duration_ms: 9.5339
+  type: 'test'
+  ...
+# Subtest: F06: ordinary members can see their event-only character and signup
+ok 17 - F06: ordinary members can see their event-only character and signup
+  ---
+  duration_ms: 3.4912
+  type: 'test'
+  ...
+# Subtest: F07/F21: stale profile edits are rejected rather than overwriting changes
+ok 18 - F07/F21: stale profile edits are rejected rather than overwriting changes
+  ---
+  duration_ms: 2.9779
+  type: 'test'
+  ...
+# Subtest: F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+ok 19 - F08: invalid payloads are rejected and malformed legacy rows cannot crash matching
+  ---
+  duration_ms: 1.5111
+  type: 'test'
+  ...
+# Subtest: F09: repeated slots never count one player more than once
+ok 20 - F09: repeated slots never count one player more than once
+  ---
+  duration_ms: 2.606
+  type: 'test'
+  ...
+# Subtest: F10: both DST transition Sundays preserve noon wall-clock availability
+ok 21 - F10: both DST transition Sundays preserve noon wall-clock availability
+  ---
+  duration_ms: 1.2977
+  type: 'test'
+  ...
+# Subtest: F10: Pacific midnight conversion preserves both day segments
+ok 22 - F10: Pacific midnight conversion preserves both day segments
+  ---
+  duration_ms: 1.0219
+  type: 'test'
+  ...
+# Subtest: F10: non-half-hour timezone offsets yield exact intervals
+ok 23 - F10: non-half-hour timezone offsets yield exact intervals
+  ---
+  duration_ms: 0.7846
+  type: 'test'
+  ...
+# Subtest: F11: failed group insert rolls back deletion and history together
+ok 24 - F11: failed group insert rolls back deletion and history together
+  ---
+  duration_ms: 10.9987
+  type: 'test'
+  ...
+# Subtest: F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+ok 25 - F12: publishing rejects cross-board players, duplicates, wrong tiers and roles
+  ---
+  duration_ms: 8.0794
+  type: 'test'
+  ...
+# Subtest: F12: deleting a character cascades signups and assignments
+ok 26 - F12: deleting a character cascades signups and assignments
+  ---
+  duration_ms: 7.3824
+  type: 'test'
+  ...
+# Subtest: F13: archiving preserves all profiles and event signups
+ok 27 - F13: archiving preserves all profiles and event signups
+  ---
+  duration_ms: 6.4518
+  type: 'test'
+  ...
+# Request failed: Error
+# Subtest: F14: database errors become HTTP 503 and the server remains alive
+ok 28 - F14: database errors become HTTP 503 and the server remains alive
+  ---
+  duration_ms: 10.1335
+  type: 'test'
+  ...
+# Subtest: F14: initialization retries after a transient first failure
+ok 29 - F14: initialization retries after a transient first failure
+  ---
+  duration_ms: 2.2429
+  type: 'test'
+  ...
+# Subtest: F16: simultaneous signups remain valid and cannot silently overfill groups
+ok 30 - F16: simultaneous signups remain valid and cannot silently overfill groups
+  ---
+  duration_ms: 5.98
+  type: 'test'
+  ...
+# Subtest: F16/F21: repeated creation requests are idempotent
+ok 31 - F16/F21: repeated creation requests are idempotent
+  ---
+  duration_ms: 2.7815
+  type: 'test'
+  ...
+# Subtest: F17: sparse stable group IDs are preserved exactly
+ok 32 - F17: sparse stable group IDs are preserved exactly
+  ---
+  duration_ms: 11.6605
+  type: 'test'
+  ...
+# Subtest: one member cannot sign up multiple alts for the same event
+ok 33 - one member cannot sign up multiple alts for the same event
+  ---
+  duration_ms: 4.2593
+  type: 'test'
+  ...
+# Subtest: claims are board-scoped, single-use and attach a private owner key
+ok 34 - claims are board-scoped, single-use and attach a private owner key
+  ---
+  duration_ms: 3.4943
+  type: 'test'
+  ...
+# Subtest: F08/F14: actual HTTP malformed bodies return 400, not process failures
+ok 35 - F08/F14: actual HTTP malformed bodies return 400, not process failures
+  ---
+  duration_ms: 16.9209
+  type: 'test'
+  ...
+# Subtest: private key parsing never accepts V2 identifiers or anon
+ok 36 - private key parsing never accepts V2 identifiers or anon
+  ---
+  duration_ms: 0.1582
+  type: 'test'
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 884.8185
+
+> coffee-keys-v3@3.0.0 build
+> npm run typecheck && vite build
+
+
+> coffee-keys-v3@3.0.0 typecheck
+> tsc --noEmit
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 40 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.30 kB
+dist/assets/index-BezhhAcY.css   19.67 kB │ gzip:  4.70 kB
+dist/assets/index-CCxAw0fS.js   301.43 kB │ gzip: 94.44 kB
+✓ built in 820ms
