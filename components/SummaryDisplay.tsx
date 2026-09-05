@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { DateTime } from "luxon";
-import { Role, type Player } from "../types";
+import type { Player } from "../types";
 import {
   findOverlaps,
   formatTime,
   isFullGroup,
 } from "../services/matchingService";
-import { seatPlayers } from "../shared/groups.js";
-import { PlayerName, RoleText } from "./RoleText";
+import { PlayerName } from "./RoleText";
+import OverlapSlots from "./OverlapSlots";
 export default function SummaryDisplay({ players }: { players: Player[] }) {
   const [week, setWeek] = useState(
     DateTime.now().setZone("America/New_York").startOf("week").toISODate()!,
@@ -72,52 +72,30 @@ export default function SummaryDisplay({ players }: { players: Player[] }) {
         </label>
       </div>
       <div className="grid md:grid-cols-2 gap-3">
-        {matches.map((m) => {
-          const group = seatPlayers(m.players, [
-            Role.TANK,
-            Role.HEALER,
-            Role.DPS,
-            Role.DPS,
-            Role.DPS,
-          ]);
-          return (
-            <article
-              key={`${m.day}-${m.start}`}
-              className="rounded-lg border border-slate-600 p-4"
-            >
-              <h3 className="font-semibold">
-                {m.day} · {formatTime(m.start)}–
-                {m.end === 1440 ? "Midnight" : formatTime(m.end)} ET
-              </h3>
-              <p className="muted mt-1">
-                {m.players.length} available characters ·{" "}
-                {group ? "A full group is possible" : "More roles needed"}
-              </p>
-              {group && (
-                <ul className="my-2 text-sm">
-                  {group.map((s) => (
-                    <li key={s.playerId}>
-                      <RoleText role={s.role}>{s.role}:</RoleText>{" "}
-                      <PlayerName
-                        player={m.players.find((p) => p.id === s.playerId)}
-                        role={s.role}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p className="text-sm text-slate-300 mt-2">
-                Available:{" "}
-                {m.players.map((p, i) => (
-                  <span key={p.id}>
-                    {i > 0 && ", "}
-                    <PlayerName player={p} />
-                  </span>
-                ))}
-              </p>
-            </article>
-          );
-        })}
+        {matches.map((m) => (
+          <article
+            key={`${m.day}-${m.start}`}
+            className="rounded-lg border border-slate-600 p-4"
+          >
+            <h3 className="font-semibold">
+              {m.day} · {formatTime(m.start)}–
+              {m.end === 1440 ? "Midnight" : formatTime(m.end)} ET
+            </h3>
+            <p className="muted mt-1">
+              {m.players.length} available characters
+            </p>
+            <OverlapSlots players={m.players} />
+            <p className="text-sm text-slate-300 mt-2">
+              Available:{" "}
+              {m.players.map((p, i) => (
+                <span key={p.id}>
+                  {i > 0 && ", "}
+                  <PlayerName player={p} />
+                </span>
+              ))}
+            </p>
+          </article>
+        ))}
       </div>
       {!matches.length && (
         <p className="muted">

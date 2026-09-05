@@ -108,3 +108,68 @@ textarea {
 .role-text[data-role="DPS"] {
   color: #fca5a5;
 }
+.overlap-status {
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #334155;
+  color: #e2e8f0;
+}
+.overlap-status.is-complete {
+  background: #14532d;
+  color: #bbf7d0;
+}
+.overlap-slots {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+}
+.overlap-slot[data-role="Tank"] {
+  --slot-color: #93c5fd;
+  --slot-bg: #172e4c;
+}
+.overlap-slot[data-role="Healer"] {
+  --slot-color: #86efac;
+  --slot-bg: #16382d;
+}
+.overlap-slot[data-role="DPS"] {
+  --slot-color: #fca5a5;
+  --slot-bg: #41252c;
+}
+.overlap-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.65rem 0.4rem;
+  border: 1px solid var(--slot-color);
+  border-radius: 0.5rem;
+  background: var(--slot-bg);
+}
+.overlap-slot.is-open {
+  border-style: dashed;
+  background: #111827;
+}
+.overlap-slot-role {
+  color: var(--slot-color);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.overlap-slot-state {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.overlap-slot-name {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+  color: #94a3b8;
+}
+@media (max-width: 440px) {
+  .overlap-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

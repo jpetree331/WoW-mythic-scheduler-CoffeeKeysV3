@@ -1,7 +1,7 @@
 import options from "./options.json" with { type: "json" };
 const { ROLES, TIERS } = options;
 // Augmenting paths move flexible players when another seat needs them.
-function seatPlayers(input, roles) {
+function previewSeats(input, roles) {
   const people = [...new Map(input.map((p) => [p.id, p])).values()].sort(
     (a, b) => a.roles.length - b.roles.length || a.id.localeCompare(b.id),
   );
@@ -21,8 +21,14 @@ function seatPlayers(input, roles) {
     }
     return false;
   }
-  for (let i = 0; i < roles.length; i++) if (!fill(i, new Set())) return null;
-  return seats.map((p, i) => ({ playerId: p.id, role: roles[i] }));
+  // Keep trying later roles when a seat is empty, so an incomplete lineup still
+  // shows every usable player. Each member can occupy at most one seat.
+  for (let i = 0; i < roles.length; i++) fill(i, new Set());
+  return seats.map((p, i) => ({ playerId: p?.id ?? null, role: roles[i] }));
+}
+function seatPlayers(input, roles) {
+  const seats = previewSeats(input, roles);
+  return seats.every((s) => s.playerId !== null) ? seats : null;
 }
 function planGroups(people, tier) {
   const eligible = [
@@ -48,4 +54,4 @@ function planGroups(people, tier) {
   }
   return [];
 }
-export { ROLES, TIERS, seatPlayers, planGroups };
+export { ROLES, TIERS, previewSeats, seatPlayers, planGroups };
