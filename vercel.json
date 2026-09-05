@@ -7,13 +7,7 @@
     "api/handler.js": {
       "maxDuration": 60,
       "includeFiles": "server/migrations/**",
-      "excludeFiles": [
-        "server/data/**",
-        ".audit-cache/**",
-        ".npm-cache/**",
-        "audit/**",
-        "tests/**"
-      ]
+      "excludeFiles": "{server/data,.audit-cache,.npm-cache,audit,tests}/**"
     }
   },
   "rewrites": [

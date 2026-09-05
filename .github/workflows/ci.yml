@@ -12,6 +12,7 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - run: npm run verify:vercel
       - run: npm run check
       - run: npm audit --audit-level=high
   postgres:

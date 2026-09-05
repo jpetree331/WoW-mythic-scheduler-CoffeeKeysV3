@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, "..");
 const tool = (name) =>
   require(path.join(root, ".audit-cache/vercel-tools/node_modules", name));
 (async () => {
+  await require("./validate-vercel-config.cjs").validateVercelConfig();
   const config = require("../vercel.json");
   // Package a clean source tree, like a Git-based Vercel deployment. This also
   // avoids tracing retained, ignored V2 database files in the local workspace.

@@ -1,5 +1,6 @@
+Vercel configuration matches https://openapi.vercel.sh/vercel.json; array regression rejected.
 
-added 138 packages in 2s
+added 144 packages in 2s
 Skipping "install" command...
 Running "npm run build"
 
@@ -18,7 +19,7 @@ computing gzip size...
 dist/index.html                   0.43 kB │ gzip:  0.31 kB
 dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
 dist/assets/index-WSJnGYls.js   301.37 kB │ gzip: 94.39 kB
-✓ built in 906ms
+✓ built in 813ms
 {
   "runtime": "nodejs",
   "handler": "api\\handler.js",

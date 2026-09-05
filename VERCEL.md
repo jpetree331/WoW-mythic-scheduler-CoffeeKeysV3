@@ -38,6 +38,8 @@ Changing `DATABASE_URL` does not copy an existing V3 SQLite/libSQL database. If 
 
 ## Verification and troubleshooting
 
+`npm run verify:vercel` validates the entire configuration against Vercel's live official schema and confirms that the rejected array form of `excludeFiles` fails validation. It requires internet access and also runs in CI and before the optional package check. Vercel requires a single glob string for `includeFiles`/`excludeFiles`; the lower-level Node builder alone does not enforce this import-time requirement.
+
 `npm run check` runs the SQLite-compatible tests, strict TypeScript and production build. PostgreSQL integration tests additionally run when `TEST_DATABASE_URL` points to an isolated **loopback** PostgreSQL server. They create and drop only randomly named `coffee_test_*` schemas; do not use production credentials for tests. GitHub Actions provisions a disposable PostgreSQL service and runs the full suite against it.
 
 The optional `audit/verify-vercel-build.cjs` checks routing with Vercel's routing utilities and packages a clean source copy with the official Node builder. It checks that PostgreSQL code/migrations are present and local database files are absent. Its install command is documented at the top of the script; dependencies/output live under ignored `.audit-cache`.

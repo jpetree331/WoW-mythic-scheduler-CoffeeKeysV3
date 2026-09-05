@@ -2,6 +2,8 @@
 
 ## Vercel + Neon update
 
+Deployment-import correction: changed `functions.api/handler.js.excludeFiles` from an array to a single brace-expansion glob string. The prior lower-level builder check did not validate the project-import schema. CI and the optional packaging check now validate the full configuration against Vercel's live schema, including rejection of the original invalid array.
+
 V3 now includes a Vercel Node request handler, PostgreSQL adapter and schema, shared rate limiting, transaction locks across instances, and visible-tab polling. See `VERCEL.md` for deployment settings and limitations. No live database or hosting configuration has been changed.
 
 PostgreSQL integration tests cover concurrent cold starts, stale edit/signup/publication races across separate pools, actual SQL-error rollback, consistent snapshots, shared rate counters, V2 import and authenticated Vercel entrypoint requests. The official Vercel Node builder packages a clean source copy; `audit/vercel-package.json` records the routing and migration inclusion checks. Current test evidence is in `audit/vercel-postgres-tests.txt` and `audit/vercel-check.txt`.
