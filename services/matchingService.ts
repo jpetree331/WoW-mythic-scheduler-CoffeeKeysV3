@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { Player, Match, Role } from "../types";
 import { DAYS_OF_WEEK } from "../constants";
-import { seatPlayers } from "../shared/groups.js";
+import { previewSeats } from "../shared/groups.js";
 
 export function findOverlaps(
   players: Player[],
@@ -113,11 +113,12 @@ export function formatTime(minutes: number) {
     m = normalized % 60;
   return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
 }
+export const weeklySeats = (players: Player[]) =>
+  // An edit key grants access, but does not identify who plays a character.
+  // Organizers can manage several people's characters under the same key.
+  previewSeats(
+    players.map((p) => ({ ...p, memberId: p.id })),
+    [Role.TANK, Role.HEALER, Role.DPS, Role.DPS, Role.DPS],
+  );
 export const isFullGroup = (match: Match) =>
-  !!seatPlayers(match.players, [
-    Role.TANK,
-    Role.HEALER,
-    Role.DPS,
-    Role.DPS,
-    Role.DPS,
-  ]);
+  weeklySeats(match.players).every((seat) => seat.playerId !== null);

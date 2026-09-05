@@ -74,7 +74,7 @@ test("calendar export is escaped, UTF-8 folded, dated and has a stable UID", () 
     result.split("\r\n").every((line) => Buffer.byteLength(line) <= 75),
   );
 });
-test("weekly role matching never gives two alts of one member separate seats", () => {
+test("member-based group matching never gives two alts of one member separate seats", () => {
   const { seatPlayers } = require("../shared/groups.js");
   const p = [
     { id: "a", memberId: "same", roles: ["Tank"] },

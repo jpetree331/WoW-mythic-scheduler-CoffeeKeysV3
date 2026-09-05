@@ -1,8 +1,7 @@
 import { Role, type Player } from "../types";
-import { previewSeats } from "../shared/groups.js";
+import { weeklySeats } from "../services/matchingService";
 import { PlayerName } from "./RoleText";
 
-const groupRoles = [Role.TANK, Role.HEALER, Role.DPS, Role.DPS, Role.DPS];
 const labels = {
   [Role.TANK]: "Tank",
   [Role.HEALER]: "Heal",
@@ -10,7 +9,7 @@ const labels = {
 };
 
 export default function OverlapSlots({ players }: { players: Player[] }) {
-  const seats = previewSeats(players, groupRoles);
+  const seats = weeklySeats(players);
   const filled = seats.filter((s) => s.playerId !== null).length;
   const needs = [Role.TANK, Role.HEALER, Role.DPS].flatMap((role) => {
     const count = seats.filter(

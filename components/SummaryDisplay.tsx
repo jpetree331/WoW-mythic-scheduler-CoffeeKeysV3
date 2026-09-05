@@ -29,7 +29,8 @@ export default function SummaryDisplay({ players }: { players: Player[] }) {
       <p className="muted mt-2">
         Explore shared availability for the selected week. Times below are
         Eastern; event cards show your local time. These suggestions do not
-        reserve players. Slots with ambiguous or nonexistent clock-change
+        reserve players. Characters count separately; confirm the lineup if
+        someone lists alts. Slots with ambiguous or nonexistent clock-change
         endpoints are skipped; use a dated event for those times.
       </p>
       <div className="grid sm:grid-cols-3 gap-3 my-5">
