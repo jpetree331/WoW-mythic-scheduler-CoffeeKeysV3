@@ -5,6 +5,29 @@ const { createApp } = require("../server/server.cjs");
 const { createDatabase } = require("../server/db.cjs");
 const { input } = require("./helpers.cjs");
 const { testDatabase } = require("./database.cjs");
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
+
+test("Vercel API starts when Node disables synchronous require of ES modules", () => {
+  execFileSync(
+    process.execPath,
+    [
+      "--no-experimental-require-module",
+      path.join(__dirname, "runtime-smoke.cjs"),
+    ],
+    {
+      env: {
+        ...process.env,
+        VERCEL: "1",
+        DATABASE_URL: "",
+        ADMIN_TOKEN: "",
+        ADMIN_TOKENS: "{}",
+      },
+      stdio: "pipe",
+      timeout: 15000,
+    },
+  );
+});
 
 async function invoke(
   handler,

@@ -1,5 +1,5 @@
-const ROLES = ["Tank", "Healer", "DPS"];
-const TIERS = ["2-5", "6-9", "10+"];
+import options from "./options.json" with { type: "json" };
+const { ROLES, TIERS } = options;
 // Augmenting paths move flexible players when another seat needs them.
 function seatPlayers(input, roles) {
   const people = [...new Map(input.map((p) => [p.id, p])).values()].sort(

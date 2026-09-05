@@ -1,5 +1,5 @@
 const { DateTime, IANAZone } = require("luxon");
-const { ROLES, TIERS } = require("../shared/groups.js");
+const { ROLES, TIERS } = require("../shared/options.json");
 const DAYS = [
   "Monday",
   "Tuesday",

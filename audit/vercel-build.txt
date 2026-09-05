@@ -13,19 +13,22 @@ Running "npm run build"
 
 vite v7.3.6 building client environment for production...
 transforming...
-✓ 40 modules transformed.
+✓ 41 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/index.html                   0.43 kB │ gzip:  0.31 kB
 dist/assets/index-m9u32f46.css   17.90 kB │ gzip:  4.38 kB
-dist/assets/index-WSJnGYls.js   301.37 kB │ gzip: 94.39 kB
-✓ built in 813ms
+dist/assets/index-C9zQggNN.js   301.40 kB │ gzip: 94.42 kB
+✓ built in 815ms
+Vercel runtime startup passes without require(ESM); API responds and reports missing database configuration safely.
 {
   "runtime": "nodejs",
   "handler": "api\\handler.js",
   "fileCount": 179,
   "postgresMigrationBundled": true,
   "localDataExcluded": true,
+  "packagedRuntimeStartup": true,
+  "requireEsmDisabled": true,
   "routes": [
     {
       "src": "^(?:/(.*))$",

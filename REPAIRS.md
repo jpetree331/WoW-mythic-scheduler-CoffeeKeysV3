@@ -2,6 +2,8 @@
 
 ## Vercel + Neon update
 
+Runtime-startup correction: the CommonJS validator previously required the ESM grouping module during startup. With synchronous `require(ESM)` disabled, this throws before the API error handler is loaded. Shared role/tier values now live in JSON, loaded natively by both module formats. The regression suite starts a fresh Node process with `--no-experimental-require-module`; the packaging check also executes the exact bundled files outside the workspace under that restriction, including PostgreSQL/Vercel helper loading and safe missing-database responses.
+
 Deployment-import correction: changed `functions.api/handler.js.excludeFiles` from an array to a single brace-expansion glob string. The prior lower-level builder check did not validate the project-import schema. CI and the optional packaging check now validate the full configuration against Vercel's live schema, including rejection of the original invalid array.
 
 V3 now includes a Vercel Node request handler, PostgreSQL adapter and schema, shared rate limiting, transaction locks across instances, and visible-tab polling. See `VERCEL.md` for deployment settings and limitations. No live database or hosting configuration has been changed.

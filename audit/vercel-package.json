@@ -4,6 +4,8 @@
   "fileCount": 179,
   "postgresMigrationBundled": true,
   "localDataExcluded": true,
+  "packagedRuntimeStartup": true,
+  "requireEsmDisabled": true,
   "routes": [
     {
       "src": "^(?:/(.*))$",

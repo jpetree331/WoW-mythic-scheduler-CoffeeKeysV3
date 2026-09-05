@@ -46,6 +46,8 @@ The optional `audit/verify-vercel-build.cjs` checks routing with Vercel's routin
 
 If `/api/health` returns 503, check `DATABASE_URL`, Neon connectivity/TLS and database permissions in Vercel's server logs. If the page loads but `/api/*` returns HTML, confirm the project root and checked-in rewrite configuration. If organizers cannot sign in, confirm the token is set in the correct environment and redeploy. Drafts remain available after failed saves.
 
+A platform `500 FUNCTION_INVOCATION_FAILED` on even `/api/stream` indicates a function startup/runtime failure before database access. Deploy the latest commit, then inspect Vercel runtime logs if it persists. The package check now executes the bundled API with synchronous `require(ESM)` disabled, matching hosted Node configurations that exposed the original startup bug.
+
 Local PostgreSQL tests and package checks cannot verify your actual Vercel account settings, Neon credentials, TLS path or hosted deployment. Complete step 5 on your deployed URL.
 
 Official references: [Vite on Vercel](https://vercel.com/docs/frameworks/frontend/vite), [Node request handling](https://vercel.com/docs/functions/runtimes/node-js), [connection pools on Vercel](https://vercel.com/kb/guide/connection-pooling-with-functions), [Neon integration](https://vercel.com/marketplace/neon/neon), [Neon pooling](https://neon.com/docs/connect/connection-pooling), [PostgreSQL transaction locks](https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS).
